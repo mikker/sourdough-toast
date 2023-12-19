@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../src/sourdough.css" />
+    <style>
+      body {
+        background: #eee;
+      }
+    </style>
+    <script type="module" src="../src/sourdough.js"></script>
+    <script>
+      setTimeout(() => {
+        toast("Hello, world!");
+      }, 100);
+      setTimeout(() => {
+        toast("Hello, world!");
+      }, 300);
+      setTimeout(() => {
+        toast("Hello, world!");
+      }, 500);
+    </script>
+  </head>
+  <body>
+    <button onclick="toast('Hello, world!')">Toast</button>
+    <button
+      onclick="toast({title: 'Hello, world!', description: `At ${Date.now()}` })"
+    >
+      Toast with description
+    </button>
+  </body>
+</html>
