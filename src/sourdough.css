@@ -46,18 +46,11 @@
   gap: 6px;
 }
 
-/* [data-sourdough-toast]:focus-visible {*/
-/*   box-shadow:*/
-/*     0px 4px 12px rgba(0, 0, 0, 0.1),*/
-/*     0 0 0 2px rgba(0, 0, 0, 0.2);*/
-/* }*/
-/**/
-/* [data-sourdough-toast][data-y-position="top"] { */
-/*   top: 0; */
-/*   --y: translateY(-100%); */
-/*   --lift: 1; */
-/*   --lift-amount: calc(1 * var(--gap)); */
-/* } */
+[data-sourdough-toast]:focus-visible {
+  box-shadow:
+    0px 4px 12px rgba(0, 0, 0, 0.1),
+    0 0 0 2px rgba(0, 0, 0, 0.2);
+}
 
 [data-sourdough-toast] {
   bottom: 0;
@@ -222,24 +215,24 @@
 /* /*   top: 50%;*/
 /* /*   transform: scaleY(3) translateY(-50%);*/
 /* /* }*/
-/* /**/
-/* /* /* Leave a ghost div to avoid setting hover to false when transitioning out*/
-/* /* [data-sourdough-toast][data-swiping="false"][data-removed="true"]:before {*/
-/* /*   content: "";*/
-/* /*   position: absolute;*/
-/* /*   inset: 0;*/
-/* /*   transform: scaleY(2);*/
-/* /* }*/
-/* /**/
-/* /* /* Needed to avoid setting hover to false when inbetween toasts*/
-/* /* [data-sourdough-toast]:after {*/
-/* /*   content: "";*/
-/* /*   position: absolute;*/
-/* /*   left: 0;*/
-/* /*   height: calc(var(--gap) + 1px);*/
-/* /*   bottom: 100%;*/
-/* /*   width: 100%;*/
-/* /* }*/
+
+/* Leave a ghost div to avoid setting hover to false when transitioning out */
+[data-sourdough-toast][data-swiping="false"][data-removed="true"]:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: scaleY(2);
+}
+
+/* Needed to avoid setting hover to false when inbetween toasts */
+[data-sourdough-toast]:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  height: calc(var(--gap) + 1px);
+  bottom: 100%;
+  width: 100%;
+}
 
 [data-sourdough-toast][data-mounted="true"] {
   --y: translateY(0);
@@ -258,7 +251,7 @@
 }
 
 [data-sourdough-toast][data-removed="true"] {
-  /* --y: translateY(calc(var(--lift) * -100%)); */
+  --y: translateY(calc(var(--lift) * -100%));
   opacity: 0;
 }
 
@@ -277,10 +270,10 @@
   height: var(--initial-height);
 }
 
-/* [data-sourdough-toast][data-removed="true"][data-front="true"][data-swipe-out="false"] {*/
-/*   --y: translateY(calc(var(--lift) * -100%));*/
-/*   opacity: 0;*/
-/* }*/
+[data-sourdough-toast][data-removed="true"][data-front="true"][data-swipe-out="false"] {
+  --y: translateY(calc(var(--lift) * -100%));
+  opacity: 0;
+}
 
 [data-sourdough-toast][data-removed="true"][data-front="false"][data-swipe-out="false"][data-expanded="true"] {
   --y: translateY(calc(var(--lift) * var(--offset) + var(--lift) * -100%));
@@ -295,11 +288,11 @@
     opacity 200ms;
 }
 
-/* /* Bump up the height to make sure hover state doesn't get set to false*/
-/* [data-sourdough-toast][data-removed="true"][data-front="false"]:before {*/
-/*   height: calc(var(--initial-height) + 20%);*/
-/* }*/
-/**/
+/* Bump up the height to make sure hover state doesn't get set to false */
+[data-sourdough-toast][data-removed="true"][data-front="false"]:before {
+  height: calc(var(--initial-height) + 20%);
+}
+
 /* /* [data-sourdough-toast][data-swiping="true"] {*/
 /* /*   transform: var(--y) translateY(var(--swipe-amount, 0px));*/
 /* /*   transition: none;*/

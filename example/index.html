@@ -8,17 +8,20 @@
         background: #eee;
       }
     </style>
-    <script type="module" src="../src/sourdough.js"></script>
-    <script>
+    <script type="module">
+      import { toast } from "../src/sourdough.js";
+
+      window.toast = toast;
+
       setTimeout(() => {
         toast("Hello, world!");
       }, 100);
       setTimeout(() => {
         toast("Hello, world!");
-      }, 300);
+      }, 1100);
       setTimeout(() => {
         toast("Hello, world!");
-      }, 500);
+      }, 2100);
     </script>
   </head>
   <body>
