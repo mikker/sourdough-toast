@@ -1,16 +1,24 @@
 {
   "name": "sourdough-toast",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Delicious Sourdough Toast",
   "main": "src/sourdough-toast.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "five-server --open=false"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Mikkel Malmberg (@mikker)",
+  "license": "MIT",
   "devDependencies": {
     "five-server": "^0.3.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikker/sourdough-toast.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mikker/sourdough-toast/issues"
+  },
+  "homepage": "https://github.com/mikker/sourdough-toast#readme"
 }
