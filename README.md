@@ -1,0 +1,5 @@
+# sourdough-toast
+
+## License
+
+MIT

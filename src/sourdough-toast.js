@@ -236,8 +236,6 @@ class Sourdough {
 
     const front = toasts_to_render[toasts_to_render.length - 1];
 
-    console.log("toasts to render", toasts_to_render.length);
-
     for (const [index, t] of toasts_to_render.entries()) {
       if (changedExtended) {
         t.paused ? t.resume() : t.pause();

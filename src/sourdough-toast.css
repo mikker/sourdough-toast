@@ -1,3 +1,8 @@
+/**
+ * This file is copied, more or less directly, from sonner by Emil Kowalski
+ *    - see https://sonner.emilkowal.ski
+ */
+
 [data-sourdough-toaster] {
   position: fixed;
   width: var(--width);

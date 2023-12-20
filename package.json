@@ -1,11 +1,11 @@
 {
-  "name": "sourdough",
+  "name": "sourdough-toast",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/sourdough-toast.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "five-server"
+    "dev": "five-server --open=false"
   },
   "keywords": [],
   "author": "",
