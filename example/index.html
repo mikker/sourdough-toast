@@ -7,6 +7,9 @@
       body {
         background: #eee;
       }
+      body > div > [data-slot="icon"] {
+        width: 100%;
+      }
     </style>
     <script type="module">
       import { toast } from "../src/sourdough-toast.js";
@@ -14,22 +17,30 @@
       window.toast = toast;
 
       setTimeout(() => {
-        toast("Hello, world!");
+        toast.success("Hello, world!");
       }, 100);
       setTimeout(() => {
-        toast("Hello, world!");
+        toast.error("Hello, world!");
       }, 1100);
       setTimeout(() => {
-        toast("Hello, world!");
+        toast.warning("Hello, world!");
       }, 2100);
     </script>
   </head>
   <body>
-    <button onclick="toast('Hello, world!')">Toast</button>
-    <button
-      onclick="toast({title: 'Hello, world!', description: `At ${Date.now()}` })"
-    >
-      Toast with description
-    </button>
+    <div>
+      <button onclick="toast('Hi')">toast("Hi")</button>
+      <button
+        onclick="toast.message({title: 'Hello, world!', description: `At ${Date.now()}` })"
+      >
+        toast.message({ title:, description: })
+      </button>
+    </div>
+    <div>
+      <button onclick="toast.success('Success!')">Success</button>
+      <button onclick="toast.info('Info!')">Info</button>
+      <button onclick="toast.warning('Warning!')">Warning</button>
+      <button onclick="toast.error('Error!')">Error</button>
+    </div>
   </body>
 </html>
