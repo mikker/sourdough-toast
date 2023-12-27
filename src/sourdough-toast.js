@@ -1,14 +1,24 @@
-const MAX_TOASTS = 3;
-const TOAST_DURATION = 4000; // * 10000;
-const WIDTH = 356;
-const VIEWPORT_OFFSET = 32;
-const GAP = 14;
+// vim: foldmethod=marker
 
-const SVG_NS = "http://www.w3.org/2000/svg";
+const DEFAULT_OPTIONS = {
+  maxToasts: 3,
+  duration: 4000, // * 10000,
+  width: 356,
+  gap: 14,
+  theme: "light",
+  viewportOffset: 32,
+  expandedByDefault: false,
+  yPosition: "bottom",
+  xPosition: "right",
+};
 
 let toastsCounter = 0;
 
+// {{{ Helpers
+const SVG_NS = "http://www.w3.org/2000/svg";
+
 const svgTags = ["svg", "path", "line"];
+
 const h = (tag, props = {}, children = [], isSvg = false) => {
   const element =
     svgTags.includes(tag) || isSvg
@@ -192,13 +202,24 @@ function getDocumentDirection() {
 
   return dirAttribute;
 }
+// }}}
 
-class State {
+const EVENTS = {
+  add: "sourdough:add",
+  remove: "sourdough:remove",
+};
+
+// {{{ class State
+class State extends EventTarget {
   constructor() {
+    super();
+
     this.subscribers = [];
+
     this.data = {
       toasts: [],
       expanded: false,
+      interacting: false,
     };
   }
 
@@ -215,19 +236,24 @@ class State {
     this.subscribers.forEach((fn) => fn(data));
   };
 
+  touch = () => {
+    this.publish(this.data);
+  };
+
   set = (fn) => {
     const change = fn({ ...this.data });
+    console.log(change);
     this.data = { ...this.data, ...change };
     this.publish(this.data);
   };
 
   add = (toast) => {
     this.set((data) => ({
-      toasts: [...data.toasts, toast].slice(-MAX_TOASTS),
+      toasts: [...data.toasts, toast],
     }));
   };
 
-  removeToast = (id) => {
+  remove = (id) => {
     this.set((data) => ({
       toasts: data.toasts.filter((t) => t.id !== id),
     }));
@@ -241,6 +267,14 @@ class State {
     this.set(() => ({ expanded: false }));
   };
 
+  focus = () => {
+    this.set(() => ({ interacting: true }));
+  };
+
+  blur = () => {
+    this.set(() => ({ interacting: false }));
+  };
+
   create = (opts) => {
     const id = (toastsCounter++).toString();
     const toast = { id, ...opts };
@@ -249,13 +283,14 @@ class State {
 
     return id;
   };
-}
+} // }}}
 
+// {{{ class Toast
 class Toast {
-  constructor(opts = {}) {
+  constructor(sourdough, opts = {}) {
+    this.sourdough = sourdough;
     this.opts = opts;
 
-    this.mounted = false;
     this.paused = false;
 
     const children = [];
@@ -286,11 +321,7 @@ class Toast {
 
     const contentChildren = [];
 
-    const title = h(
-      "div",
-      { dataset: { title: "" } },
-      opts.title + ` ${opts.id}`,
-    );
+    const title = h("div", { dataset: { title: "" } }, opts.title);
 
     contentChildren.push(title);
 
@@ -312,10 +343,13 @@ class Toast {
       {
         dataset: {
           sourdoughToast: "",
-          expanded: false,
+          expanded: sourdough.opts.expanded,
           styled: true,
           swiping: false,
+          swipeOut: false,
           type: opts.type,
+          yPosition: sourdough.opts.yPosition,
+          xPosition: sourdough.opts.xPosition,
         },
         style: {},
       },
@@ -325,31 +359,23 @@ class Toast {
     this.element = li;
   }
 
-  mount = (list) => {
-    this.mounted = true;
+  mount = () => {
     this.element.dataset.mounted = "true";
-    this.element.dataset.swiping = "false";
-    this.element.dataset.yPosition = list.dataset.yPosition;
-    this.element.dataset.xPosition = list.dataset.xPosition;
 
     this.initialHeight = this.element.offsetHeight;
-    this.element.style.setProperty(
-      "--initial-height",
-      `${this.initialHeight}px`,
-    );
 
-    this.timeLeft = TOAST_DURATION;
+    state.touch();
+
+    this.timeLeft = this.sourdough.opts.duration;
     this.resume();
   };
 
   remove = () => {
-    // if (this.element.dataset.removed) return;
-
     this.element.dataset.removed = "true";
 
     setTimeout(() => {
       this.element.remove();
-      state.removeToast(this.opts.id);
+      state.remove(this.opts.id);
     }, 400);
   };
 
@@ -365,37 +391,45 @@ class Toast {
     this.timer = setTimeout(this.remove, this.timeLeft);
   };
 }
+// }}}
 
 class Sourdough {
   constructor(opts = {}) {
-    this.opts = opts;
-    this.expanded = false;
+    this.opts = Object.assign({}, DEFAULT_OPTIONS, opts);
+
+    this.expanded = this.opts.expandedByDefault;
+    if (this.opts.expandedByDefault) setTimeout(state.expand);
+
+    // Cache rendered toasts by id
     this.renderedToastsById = {};
 
     this.list = h("ol", {
       dir: getDocumentDirection(),
       dataset: {
         sourdoughToaster: "",
-        expanded: false,
-        theme: "light",
+        expanded: this.expanded,
+        theme: this.opts.theme,
         richColors: this.opts.richColors,
-        yPosition: "bottom",
-        xPosition: "right",
+        yPosition: this.opts.yPosition,
+        xPosition: this.opts.xPosition,
       },
       style: {
-        "--width": `${opts.width}px`,
-        "--gap": `${opts.gap}px`,
-        "--offset": `${opts.offset}px`,
+        "--width": `${this.opts.width}px`,
+        "--gap": `${this.opts.gap}px`,
+        "--offset": `${this.opts.viewportOffset}px`,
       },
     });
 
-    this.list.addEventListener("mouseenter", state.expand);
-    this.list.addEventListener("mouseleave", state.collapse);
+    this.list.addEventListener("mouseenter", state.focus);
+    this.list.addEventListener("mouseleave", state.blur);
 
     this.element = h(
       "div",
       {
-        dataset: { sourdough: "" },
+        dataset: {
+          sourdough: "",
+          ...opts.dataset,
+        },
       },
       [this.list],
     );
@@ -403,32 +437,37 @@ class Sourdough {
     this.subscription = state.subscribe(this.update.bind(this));
   }
 
-  boot() {
-    document.body.appendChild(this.element);
-  }
-
-  update(state) {
-    const changedExtended = this.expanded !== state.expanded;
-    if (changedExtended) {
-      this.expanded = state.expanded;
-      this.list.dataset.expanded = this.expanded;
+  boot = () => {
+    if (document.querySelector("[data-sourdough]")) {
+      return;
     }
+    document.body.appendChild(this.element);
+  };
 
+  update = (state) => {
+    this.expanded = state.expanded;
+    this.list.dataset.expanded = this.expanded;
+
+    // Get first X toasts
+    const toasts = state.toasts.slice(-this.opts.maxToasts);
+
+    // Render and cache toasts that haven't been rendered yet
     const renderedIds = [];
-    const toasts_to_render = state.toasts.reduce((coll, t) => {
+    const toastsToRender = toasts.reduce((coll, t) => {
       renderedIds.push(t.id);
       coll.push(this.renderedToastsById[t.id] || this.createToast(t));
       return coll;
     }, []);
 
+    // Uncache and remove toast elements that are not to be rendered
     Object.keys(this.renderedToastsById).forEach((id) => {
       if (!renderedIds.includes(id)) {
-        this.renderedToastsById[id].remove();
+        this.renderedToastsById[id].element.remove();
         delete this.renderedToastsById[id];
       }
     });
 
-    const front = toasts_to_render[toasts_to_render.length - 1];
+    const front = toastsToRender[toastsToRender.length - 1];
 
     if (front) {
       this.list.style.setProperty(
@@ -437,9 +476,11 @@ class Sourdough {
       );
     }
 
-    for (const [index, t] of toasts_to_render.entries()) {
-      if (changedExtended) {
-        t.paused ? t.resume() : t.pause();
+    for (const [index, t] of toastsToRender.entries()) {
+      if (t.paused && !state.interacting) {
+        t.resume();
+      } else if (!t.paused && state.interacting) {
+        t.pause();
       }
 
       t.element.dataset.index = index;
@@ -449,15 +490,20 @@ class Sourdough {
       t.element.style.setProperty("--index", index);
       t.element.style.setProperty(
         "--toasts-before",
-        toasts_to_render.length - index - 1,
+        toastsToRender.length - index - 1,
       );
       t.element.style.setProperty("--z-index", index);
 
+      t.element.style.setProperty(
+        "--initial-height",
+        state.expanded ? "auto" : `${t.initialHeight}px`,
+      );
+
       // Calculate offset by adding all the heights of the toasts before
       // the current one + the gap between them.
-      // Note: We're actually calculating the total height once per loop
-      // which is not ideal.
-      const [heightBefore, totalHeight] = toasts_to_render.reduce(
+      // Note: We're calculating the total height once per loop which is
+      // not ideal.
+      const [heightBefore, totalHeight] = toastsToRender.reduce(
         ([before, total], t, i) => {
           const boxHeight = t.initialHeight + this.opts.gap;
           if (i < index) before += boxHeight;
@@ -474,32 +520,25 @@ class Sourdough {
         `${t.element.dataset.removed ? "0" : offset || 0}px`,
       );
     }
-  }
+  };
 
-  createToast(opts) {
-    const toast = new Toast(opts);
+  createToast = (opts) => {
+    const toast = new Toast(this, opts);
     this.renderedToastsById[opts.id] = toast;
     this.list.appendChild(toast.element);
 
-    setTimeout(() => toast.mount(this.list), 0);
+    setTimeout(toast.mount, 0);
 
     return toast;
-  }
+  };
 }
 
 const state = new State();
 
-const sourdough = new Sourdough({
-  width: WIDTH,
-  gap: GAP,
-  offset: VIEWPORT_OFFSET,
-  richColors: true,
-});
-
 const toast = (title) => {
   state.create({ title });
 };
-toast.message = ({ title, description }) => {
+toast.message = ({ title, description, ...opts }) => {
   state.create({ title, description, ...opts });
 };
 toast.success = (title, opts = {}) => {
@@ -515,8 +554,4 @@ toast.error = (title, opts = {}) => {
   state.create({ title, type: "error", ...opts });
 };
 
-export { toast, sourdough };
-
-window.addEventListener("DOMContentLoaded", () => {
-  sourdough.boot();
-});
+export { toast, Sourdough };

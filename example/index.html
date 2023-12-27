@@ -2,19 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../src/sourdough-toast.css" />
     <style>
       body {
         background: #eee;
       }
-      body > div > [data-slot="icon"] {
-        width: 100%;
-      }
     </style>
+    <link rel="stylesheet" href="../src/sourdough-toast.css" />
     <script type="module">
-      import { toast } from "../src/sourdough-toast.js";
+      import { Sourdough, toast } from "../src/sourdough-toast.js";
 
       window.toast = toast;
+
+      const sourdough = new Sourdough({
+        richColors: true,
+        yPosition: "top",
+        xPosition: "center",
+        expandedByDefault: true,
+      });
+
+      window.addEventListener("DOMContentLoaded", () => {
+        sourdough.boot();
+      });
 
       setTimeout(() => {
         toast.success("Hello, world!");
@@ -25,6 +33,9 @@
       setTimeout(() => {
         toast.warning("Hello, world!");
       }, 2100);
+      setTimeout(() => {
+        toast.info("Hello, world!");
+      }, 3100);
     </script>
   </head>
   <body>
