@@ -1,6 +1,6 @@
 {
   "name": "sourdough-toast",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Delicious Sourdough Toast",
   "main": "src/sourdough-toast.js",
   "files": [
