@@ -432,7 +432,7 @@ class Sourdough {
   };
 
   update = (state) => {
-    this.expanded = state.expanded;
+    this.expanded = state.expanded || state.interacting;
     this.list.dataset.expanded = this.expanded;
 
     // Get first X toasts
@@ -472,7 +472,7 @@ class Sourdough {
 
       t.element.dataset.index = index;
       t.element.dataset.front = t === front;
-      t.element.dataset.expanded = state.expanded;
+      t.element.dataset.expanded = this.expanded;
 
       t.element.style.setProperty("--index", index);
       t.element.style.setProperty(
@@ -483,7 +483,7 @@ class Sourdough {
 
       t.element.style.setProperty(
         "--initial-height",
-        state.expanded ? "auto" : `${t.initialHeight}px`,
+        this.expanded ? "auto" : `${t.initialHeight}px`,
       );
 
       // Calculate offset by adding all the heights of the toasts before
