@@ -2,7 +2,7 @@
 
 const DEFAULT_OPTIONS = {
   maxToasts: 3,
-  duration: 4000, // * 10000,
+  duration: 4000,
   width: 356,
   gap: 14,
   theme: "light",
@@ -204,17 +204,12 @@ function getDocumentDirection() {
 }
 // }}}
 
-const EVENTS = {
-  add: "sourdough:add",
-  remove: "sourdough:remove",
-};
+// {{{ class Store
+class Store extends EventTarget {
+  #subscribers = [];
 
-// {{{ class State
-class State extends EventTarget {
   constructor() {
     super();
-
-    this.subscribers = [];
 
     this.data = {
       toasts: [],
@@ -224,64 +219,56 @@ class State extends EventTarget {
   }
 
   subscribe = (fn) => {
-    this.subscribers.push(fn);
+    this.#subscribers.push(fn);
 
     return () => {
-      const index = this.subscribers.indexOf(fn);
-      this.subscribers.splice(index, 1);
+      this.#subscribers = this.#subscribers.filter((f) => f !== fn);
     };
   };
 
-  publish = (data) => {
-    this.subscribers.forEach((fn) => fn(data));
+  #publish = () => {
+    this.#subscribers.forEach((fn) => fn(this.data));
+  };
+
+  #set = (fn) => {
+    const change = fn({ ...this.data });
+    this.data = { ...this.data, ...change };
+    this.#publish(this.data);
   };
 
   touch = () => {
-    this.publish(this.data);
-  };
-
-  set = (fn) => {
-    const change = fn({ ...this.data });
-    console.log(change);
-    this.data = { ...this.data, ...change };
-    this.publish(this.data);
-  };
-
-  add = (toast) => {
-    this.set((data) => ({
-      toasts: [...data.toasts, toast],
-    }));
-  };
-
-  remove = (id) => {
-    this.set((data) => ({
-      toasts: data.toasts.filter((t) => t.id !== id),
-    }));
-  };
-
-  expand = () => {
-    this.set(() => ({ expanded: true }));
-  };
-
-  collapse = () => {
-    this.set(() => ({ expanded: false }));
-  };
-
-  focus = () => {
-    this.set(() => ({ interacting: true }));
-  };
-
-  blur = () => {
-    this.set(() => ({ interacting: false }));
+    this.#publish();
   };
 
   create = (opts) => {
     const id = (toastsCounter++).toString();
     const toast = { id, ...opts };
 
-    this.add(toast);
+    this.#set((data) => ({
+      toasts: [...data.toasts, toast],
+    }));
+  };
 
-    return id;
+  remove = (id) => {
+    this.#set((data) => ({
+      toasts: data.toasts.filter((t) => t.id !== id),
+    }));
+  };
+
+  expand = () => {
+    this.#set(() => ({ expanded: true }));
+  };
+
+  collapse = () => {
+    this.#set(() => ({ expanded: false }));
+  };
+
+  focus = () => {
+    this.#set(() => ({ interacting: true }));
+  };
+
+  blur = () => {
+    this.#set(() => ({ interacting: false }));
   };
 } // }}}
 
@@ -533,7 +520,7 @@ class Sourdough {
   };
 }
 
-const state = new State();
+const state = new Store();
 
 const toast = (title) => {
   state.create({ title });
