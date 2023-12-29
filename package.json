@@ -7,14 +7,17 @@
     "src"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0",
-    "dev": "five-server --open=false"
+    "dev": "five-server --open=false",
+    "test": "playwright test",
+    "test:serve": "serve -l 3030"
   },
   "keywords": [],
   "author": "Mikkel Malmberg (@mikker)",
   "license": "MIT",
   "devDependencies": {
-    "five-server": "^0.3.1"
+    "@playwright/test": "^1.40.1",
+    "five-server": "^0.3.1",
+    "serve": "^14.2.1"
   },
   "repository": {
     "type": "git",

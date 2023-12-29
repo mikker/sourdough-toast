@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sourdough Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        background: #eee;
+      }
+    </style>
+    <link rel="stylesheet" href="../src/sourdough-toast.css" />
+    <script type="module">
+      import { Sourdough, toast } from "../src/sourdough-toast.js";
+
+      const sourdough = new Sourdough();
+
+      window.addEventListener("DOMContentLoaded", () => {
+        sourdough.boot();
+      });
+
+      window.toast = toast;
+    </script>
+  </head>
+  <body>
+    <button onclick="toast('Basic toast')">Basic</button>
+    <button onclick="toast.success('Success toast')">Success</button>
+    <button onclick="toast.info('Info toast')">Info</button>
+    <button onclick="toast.warning('Warning toast')">Warning</button>
+    <button onclick="toast.error('Error toast')">Error</button>
+  </body>
+</html>
