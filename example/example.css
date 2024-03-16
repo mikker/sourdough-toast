@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@layer base {
+  .hljs {
+    @apply rounded-lg border border-gray-200;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply relative inline-flex appearance-none gap-2 rounded-lg border border-gray-300 bg-gradient-to-b from-white to-gray-50 py-1 px-3 font-medium hover:border-gray-300 active:top-px;
+  }
+
+  .btn-large {
+    @apply py-2 px-8;
+  }
+
+  .btn-inverted {
+    @apply border-transparent bg-gradient-to-b from-gray-700 to-gray-900 text-gray-100 hover:border-transparent hover:from-gray-600;
+  }
+
+  .link {
+    @apply text-blue-600 underline hover:text-blue-500 active:text-gray-900;
+  }
+
+  .h2 {
+    @apply text-lg font-bold;
+  }
+
+  .options {
+    @apply w-full rounded border border-gray-100;
+  }
+  .options th,
+  .options td {
+    @apply border border-gray-100 bg-white py-1 px-2 text-left;
+  }
+}
+
+@layer utilities {
+  .font-bowlby {
+    font-family: "Bowlby One SC", system-ui, sans-serif;
+  }
+}

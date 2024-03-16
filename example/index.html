@@ -4,53 +4,205 @@
     <meta charset="utf-8" />
     <title>Sourdough Toast</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      body {
-        background: #eee;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap"
+    />
     <link rel="stylesheet" href="../src/sourdough-toast.css" />
+    <link rel="stylesheet" href="/example/example.compiled.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/ascetic.min.css"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/example/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/example/favicon-16x16.png"
+    />
     <script type="module">
       import { Sourdough, toast } from "../src/sourdough-toast.js";
+      import hljs from "https://esm.run/highlight.js@11.9.0";
+      import javascript from "https://esm.run/highlight.js@11.9.0/lib/languages/javascript";
+      hljs.registerLanguage("javascript", javascript);
+      hljs.highlightAll();
 
       window.toast = toast;
 
-      const sourdough = new Sourdough({
-        richColors: true,
-      });
+      const sourdough = new Sourdough();
 
       window.addEventListener("DOMContentLoaded", () => {
         sourdough.boot();
       });
-
-      setTimeout(() => {
-        toast.success("Hello, world!");
-      }, 100);
-      setTimeout(() => {
-        toast.error("Hello, world!");
-      }, 1100);
-      setTimeout(() => {
-        toast.warning("Hello, world!");
-      }, 2100);
-      setTimeout(() => {
-        toast.info("Hello, world!");
-      }, 3100);
     </script>
   </head>
-  <body>
-    <div>
-      <button onclick="toast('Hi')">toast("Hi")</button>
-      <button
-        onclick="toast.message({title: 'Hello, world!', description: `At ${Date.now()}` })"
+  <body
+    class="mx-auto max-w-2xl space-y-8 bg-gray-50 text-sm text-gray-900 sm:p-12 sm:py-24"
+  >
+    <header class="flex flex-col items-center gap-2">
+      <img src="/example/toast.png" alt="Toast" width="120" class="mb-4" />
+      <h1
+        class="font-bowlby bg-cover bg-clip-text bg-center text-center text-3xl font-black uppercase leading-tight tracking-tight text-transparent sm:text-7xl"
+        style="background-image: url(/example/sourdough-bread.jpg)"
       >
-        toast.message({ title:, description: })
-      </button>
-    </div>
-    <div>
-      <button onclick="toast.success('Success!')">Success</button>
-      <button onclick="toast.info('Info!')">Info</button>
-      <button onclick="toast.warning('Warning!')">Warning</button>
-      <button onclick="toast.error('Error!')">Error</button>
-    </div>
+        Sourdough Toast
+      </h1>
+      <h2 class="text-xl font-medium">
+        A plain JS toast notification &mdash; inspired by
+        <a href="https://sonner.emilkowal.ski" class="link">Sonner</a>
+      </h2>
+      <div class="mt-4 flex gap-2">
+        <button
+          class="btn btn-large btn-inverted"
+          onclick="toast('Ohhh, I feel so clicked! 😍')"
+        >
+          Try it
+        </button>
+        <a
+          href="https://github.com/mikker/sourdough-toast"
+          class="btn btn-large"
+        >
+          GitHub
+        </a>
+      </div>
+    </header>
+
+    <div class="h-1"></div>
+
+    <section>
+      <h2 class="h2 mb-2">Installation</h2>
+      <pre><code class="language-plaintext">npm install sourdough-toast</code></pre>
+    </section>
+
+    <section>
+      <h2 class="h2 mb-2">Usage</h2>
+      <pre><code class="language-javascript">import { Sourdough, toast } from "sourdough-toast";
+
+const sourdough = new Sourdough();
+
+window.addEventListener("DOMContentLoaded", () => {
+  sourdough.boot();
+});
+
+toast("Hi!");</code></pre>
+    </section>
+
+    <section>
+      <h2 class="h2 mb-2">Usage (CDN)</h2>
+      <pre><code class="language-html">&lt;script type="module"&gt;
+  import { Sourdough, toast } from "https://esm.run/sourdough-toast";
+  const sourdough = new Sourdough();
+
+  window.addEventListener("DOMContentLoaded", () =&gt; {
+    sourdough.boot();
+  });
+
+  window.toast = toast;
+&lt;/script&gt;
+&lt;button onclick="toast('hi!')"&gt;Toast&lt;/button&gt;</code></pre>
+    </section>
+
+    <section>
+      <h2 class="h2 mb-2">Types</h2>
+      <div class="flex flex-wrap gap-2">
+        <button class="btn" onclick="toast('Your toast is ready')">
+          Default
+        </button>
+        <button
+          class="btn"
+          onclick="toast.message({ title: 'Title', description: 'Description' })"
+        >
+          With description
+        </button>
+        <button class="btn" onclick="toast.success('We did it')">
+          Success
+        </button>
+        <button class="btn" onclick="toast.info('It\'s nice outside')">
+          Info
+        </button>
+        <button class="btn" onclick="toast.warning('I\'m hungry!')">
+          Warning
+        </button>
+        <button class="btn" onclick="toast.error('Oh no, we failed')">
+          Error
+        </button>
+      </div>
+    </section>
+    <section>
+      <h2 class="h2 mb-2">Options</h2>
+      <table class="options">
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>maxToasts</code></td>
+            <td><code>3</code></td>
+            <td>Max number of toasts on screen</td>
+          </tr>
+          <tr>
+            <td><code>duration</code></td>
+            <td><code>4000</code></td>
+            <td>How fast toasts disappear</td>
+          </tr>
+          <tr>
+            <td><code>width</code></td>
+            <td><code>356</code></td>
+            <td>Width of the toasts (on desktop)</td>
+          </tr>
+          <tr>
+            <td><code>gap</code></td>
+            <td><code>14</code></td>
+            <td>Distance between stacked toasts</td>
+          </tr>
+          <tr>
+            <td><code>theme</code></td>
+            <td><code>"light"</code></td>
+            <td>Or <code>dark</code></td>
+          </tr>
+          <tr>
+            <td><code>viewportOffset</code></td>
+            <td><code>32</code></td>
+            <td>Distance to edge of window</td>
+          </tr>
+          <tr>
+            <td><code>expandedByDefault</code></td>
+            <td><code>false</code></td>
+            <td>Don't stack toasts</td>
+          </tr>
+          <tr>
+            <td><code>yPosition</code></td>
+            <td><code>"bottom"</code></td>
+            <td>Or <code>"top"</code></td>
+          </tr>
+          <tr>
+            <td><code>xPosition</code></td>
+            <td><code>"right"</code></td>
+            <td>Or <code>"left"</code> or <code>"center"</code></td>
+          </tr>
+          <tr>
+            <td><code>richColors</code></td>
+            <td><code>false</code></td>
+            <td>More colorful toasts</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <!-- <h2 class="h2 mb-2"></h2> -->
+      <p>
+        Made by <a href="https://mikkelmalmberg.com" class="link">mikker</a>.
+      </p>
+    </section>
   </body>
 </html>
