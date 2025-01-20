@@ -301,7 +301,7 @@ class Toast {
 
     const contentChildren = [];
 
-    const title = h("div", { dataset: { title: "" } }, opts.title);
+    const title = h("div", { dataset: { title: "" } }, [opts.title]);
 
     contentChildren.push(title);
 
