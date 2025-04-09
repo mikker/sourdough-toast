@@ -49,3 +49,20 @@ test("toasts don't dismiss when hovered", async ({ page }) => {
 
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
 });
+
+test("toast with closeButton:true renders a close button", async ({ page }) => {
+  await page.getByRole("button", { name: "With Close Button" }).click();
+  await expect(page.locator("[data-close-button]")).toHaveCount(1);
+});
+
+test("clicking close button removes the toast", async ({ page }) => {
+  await page.getByRole("button", { name: "With Close Button" }).click();
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
+
+  await page.locator("[data-close-button]").click();
+
+  await expect(page.locator("[data-sourdough-toast][data-removed='true']")).toBeVisible();
+
+  await page.waitForTimeout(500);
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
+});
