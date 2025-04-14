@@ -332,6 +332,14 @@ class Toast {
         { dataset: { description: "" } },
         [opts.description],
       );
+
+      const dismissTriggers = description.querySelectorAll("[data-toast-dismiss]");
+      dismissTriggers.forEach(trigger => {
+        trigger.addEventListener("click", (e) => {
+          this.remove();
+        });
+      });
+
       contentChildren.push(description);
     }
 
@@ -555,4 +563,4 @@ toast.error = (title, opts = {}) => {
   state.create({ title, type: "error", ...opts });
 };
 
-export { toast, Sourdough };
+export { toast, Sourdough, h };
