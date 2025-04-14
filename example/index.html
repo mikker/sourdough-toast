@@ -27,13 +27,14 @@
       href="/example/favicon-16x16.png"
     />
     <script type="module">
-      import { Sourdough, toast } from "../src/sourdough-toast.js";
+      import { Sourdough, toast, h } from "../src/sourdough-toast.js";
       import hljs from "https://esm.run/highlight.js@11.9.0";
       import javascript from "https://esm.run/highlight.js@11.9.0/lib/languages/javascript";
       hljs.registerLanguage("javascript", javascript);
       hljs.highlightAll();
 
       window.toast = toast;
+      window.h = h;
 
       const sourdough = new Sourdough();
 
@@ -134,6 +135,9 @@ toast("Hi!");</code></pre>
         </button>
         <button class="btn" onclick="toast.message({ title: 'Title', description: 'Description', closeButton: true })">
           With Close Button
+        </button>
+        <button class="btn" onclick="toast.message({ title: 'Confirmation needed', description: h('div', {class: 'flex justify-between items-center'}, [h('span', {}, 'Please confirm your action'), h('button', { dataset: { toastDismiss: true }, class: 'btn'}, ['Confirm'])]) })">
+          With HTML
         </button>
       </div>
     </section>
