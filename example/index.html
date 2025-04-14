@@ -132,6 +132,9 @@ toast("Hi!");</code></pre>
         <button class="btn" onclick="toast.error('Oh no, we failed')">
           Error
         </button>
+        <button class="btn" onclick="toast.message({ title: 'Title', description: 'Description', closeButton: true })">
+          With Close Button
+        </button>
       </div>
     </section>
     <section>
@@ -194,6 +197,11 @@ toast("Hi!");</code></pre>
             <td><code>richColors</code></td>
             <td><code>false</code></td>
             <td>More colorful toasts</td>
+          </tr>
+          <tr>
+            <td><code>closeButton</code></td>
+            <td><code>false</code></td>
+            <td>Show close button</td>
           </tr>
         </tbody>
       </table>

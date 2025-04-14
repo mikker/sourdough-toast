@@ -10,6 +10,7 @@ const DEFAULT_OPTIONS = {
   expandedByDefault: false,
   yPosition: "bottom",
   xPosition: "right",
+  closeButton: false,
 };
 
 let toastsCounter = 0;
@@ -182,6 +183,7 @@ const icons = {
       }),
     ],
   ),
+  close: h("svg", svgAttrs, [h("path", { d: "M6 18 18 6M6 6l12 12" })]),
 };
 
 function getDocumentDirection() {
@@ -297,6 +299,25 @@ class Toast {
       children.push(
         h("div", { dataset: { icon: "" } }, [icon.cloneNode(true)]),
       );
+    }
+
+    const showCloseButton = opts.closeButton === true || (this.sourdough.opts.closeButton === true && opts.closeButton !== false);
+    if (showCloseButton) {
+      const closeButton = h(
+        "button",
+        {
+          dataset: { closeButton: "" },
+          type: "button",
+          ariaLabel: "Close"
+        },
+        [icons.close.cloneNode(true)],
+      );
+
+      closeButton.addEventListener("click", () => {
+        this.remove();
+      });
+
+      children.push(closeButton);
     }
 
     const contentChildren = [];
