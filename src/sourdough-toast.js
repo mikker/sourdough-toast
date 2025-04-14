@@ -330,7 +330,7 @@ class Toast {
       const description = h(
         "div",
         { dataset: { description: "" } },
-        opts.description,
+        [opts.description],
       );
       contentChildren.push(description);
     }
