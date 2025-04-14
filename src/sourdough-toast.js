@@ -327,14 +327,16 @@ class Toast {
     contentChildren.push(title);
 
     if (opts.description) {
-      const description = h(
-        "div",
-        { dataset: { description: "" } },
-        [opts.description],
-      );
+      let description;
 
-      const dismissTriggers = description.querySelectorAll("[data-toast-dismiss]");
-      dismissTriggers.forEach(trigger => {
+      if (opts.html === true) {
+        description = h("div", { dataset: { description: "" } }, []);
+        description.innerHTML = opts.description;
+      } else {
+        description = h("div", { dataset: { description: "" } }, [opts.description]);
+      }
+
+      description.querySelectorAll("[data-toast-dismiss]").forEach(trigger => {
         trigger.addEventListener("click", (e) => {
           this.remove();
         });
