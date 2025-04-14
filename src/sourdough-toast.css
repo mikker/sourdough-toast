@@ -124,6 +124,10 @@ html[dir="rtl"],
   color: inherit;
 }
 
+[data-sourdough-toast] [data-toast-dismiss] {
+  cursor: pointer;
+}
+
 [data-sourdough-toast] [data-title] {
   font-weight: 500;
   line-height: 1.5;
