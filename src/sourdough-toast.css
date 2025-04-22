@@ -124,6 +124,10 @@ html[dir="rtl"],
   color: inherit;
 }
 
+[data-sourdough-toast] [data-toast-dismiss] {
+  cursor: pointer;
+}
+
 [data-sourdough-toast] [data-title] {
   font-weight: 500;
   line-height: 1.5;
@@ -162,6 +166,7 @@ html[dir="rtl"],
   display: flex;
   flex-direction: column;
   gap: 2px;
+  width: 100%;
 }
 
 [data-sourdough-toast] [data-button] {

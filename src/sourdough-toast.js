@@ -327,11 +327,21 @@ class Toast {
     contentChildren.push(title);
 
     if (opts.description) {
-      const description = h(
-        "div",
-        { dataset: { description: "" } },
-        opts.description,
-      );
+      let description;
+
+      if (opts.html === true) {
+        description = h("div", { dataset: { description: "" } }, []);
+        description.innerHTML = opts.description;
+      } else {
+        description = h("div", { dataset: { description: "" } }, [opts.description]);
+      }
+
+      description.querySelectorAll("[data-toast-dismiss]").forEach(trigger => {
+        trigger.addEventListener("click", (e) => {
+          this.remove();
+        });
+      });
+
       contentChildren.push(description);
     }
 
@@ -555,4 +565,4 @@ toast.error = (title, opts = {}) => {
   state.create({ title, type: "error", ...opts });
 };
 
-export { toast, Sourdough };
+export { toast, Sourdough, h };

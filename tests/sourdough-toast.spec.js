@@ -66,3 +66,16 @@ test("clicking close button removes the toast", async ({ page }) => {
   await page.waitForTimeout(500);
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
 });
+
+test("render html in toast description and data-toast-dismiss works", async ({ page }) => {
+  await page.getByRole("button", { name: "With HTML" }).click();
+
+  const description = await page.waitForSelector('[data-sourdough-toast] [data-description]');
+  const dismissButton = await description.$('[data-toast-dismiss]');
+  expect(dismissButton).not.toBeNull();
+  expect(await dismissButton.textContent()).toBe('Confirm');
+  await dismissButton.click();
+  await page.waitForSelector("[data-sourdough-toast][data-removed='true']");
+  await page.waitForTimeout(500);
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
+});
