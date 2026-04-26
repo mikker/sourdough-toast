@@ -139,6 +139,9 @@ toast("Hi!");</code></pre>
         <button class="btn" onclick="toast.message({ title: 'Confirmation needed', description: h('div', {class: 'flex justify-between items-center'}, [h('span', {}, 'Please confirm your action'), h('button', { dataset: { toastDismiss: true }, class: 'btn'}, ['Confirm'])]) })">
           With HTML
         </button>
+        <button class="btn" onclick="toast('This toast will stay until dismissed', { persist: true })">
+          Persist
+        </button>
       </div>
     </section>
     <section>
@@ -155,7 +158,7 @@ toast("Hi!");</code></pre>
           <tr>
             <td><code>maxToasts</code></td>
             <td><code>3</code></td>
-            <td>Max number of toasts on screen</td>
+            <td>Max number of non-persistent toasts on screen</td>
           </tr>
           <tr>
             <td><code>duration</code></td>
@@ -206,6 +209,11 @@ toast("Hi!");</code></pre>
             <td><code>closeButton</code></td>
             <td><code>false</code></td>
             <td>Show close button</td>
+          </tr>
+          <tr>
+            <td><code>persist</code></td>
+            <td><code>false</code></td>
+            <td>Keep a toast visible until dismissed. Persistent toasts always show a close button and do not count toward <code>maxToasts</code>.</td>
           </tr>
         </tbody>
       </table>

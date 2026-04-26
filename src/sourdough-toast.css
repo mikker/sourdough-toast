@@ -169,6 +169,10 @@ html[dir="rtl"],
   width: 100%;
 }
 
+[data-sourdough-toast]:has([data-close-button]) [data-content] {
+  padding-inline-end: 24px;
+}
+
 [data-sourdough-toast] [data-button] {
   border-radius: 4px;
   padding-left: 8px;
@@ -240,6 +244,14 @@ html[dir="rtl"],
 }
 
 [data-sourdough-toast]:hover [data-close-button]:hover {
+  opacity: 1;
+}
+
+[data-sourdough-toast][data-persist="true"] [data-close-button] {
+  opacity: .3;
+}
+
+[data-sourdough-toast][data-persist="true"] [data-close-button]:hover {
   opacity: 1;
 }
 

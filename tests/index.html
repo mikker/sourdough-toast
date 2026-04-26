@@ -28,7 +28,38 @@
     <button onclick="toast.info('Info toast')">Info</button>
     <button onclick="toast.warning('Warning toast')">Warning</button>
     <button onclick="toast.error('Error toast')">Error</button>
-    <button onclick="toast.message({ title: 'With Close Button', closeButton: true })">With Close Button</button>
-    <button onclick="toast.message({ title: 'With HTML', html: true, description: '<strong>HTML</strong> content <button data-toast-dismiss>Confirm</button>' })">With HTML</button>
+    <button
+      onclick="toast.message({ title: 'With Close Button', closeButton: true })"
+    >
+      With Close Button
+    </button>
+    <button
+      onclick="
+        toast.message({
+          title: 'With HTML',
+          html: true,
+          description:
+            '<strong>HTML</strong> content <button data-toast-dismiss>Confirm</button>',
+        })
+      "
+    >
+      With HTML
+    </button>
+    <button onclick="toast('Persistent toast', { persist: true })">
+      Persist
+    </button>
+    <button onclick="toast.error('Persistent error', { persist: true })">
+      Persist Error
+    </button>
+    <button
+      onclick="
+        toast(
+          'This is a much longer persistent toast message that should wrap nicely alongside the close button',
+          { persist: true },
+        )
+      "
+    >
+      Persist Long
+    </button>
   </body>
 </html>

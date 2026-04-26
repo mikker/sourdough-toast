@@ -301,7 +301,7 @@ class Toast {
       );
     }
 
-    const showCloseButton = opts.closeButton === true || (this.sourdough.opts.closeButton === true && opts.closeButton !== false);
+    const showCloseButton = opts.persist || opts.closeButton === true || (this.sourdough.opts.closeButton === true && opts.closeButton !== false);
     if (showCloseButton) {
       const closeButton = h(
         "button",
@@ -349,19 +349,25 @@ class Toast {
 
     children.push(content);
 
+    const liDataset = {
+      sourdoughToast: "",
+      expanded: sourdough.opts.expanded,
+      styled: true,
+      swiping: false,
+      swipeOut: false,
+      type: opts.type,
+      yPosition: sourdough.opts.yPosition,
+      xPosition: sourdough.opts.xPosition,
+    };
+
+    if (opts.persist) {
+      liDataset.persist = "true";
+    }
+
     const li = h(
       "li",
       {
-        dataset: {
-          sourdoughToast: "",
-          expanded: sourdough.opts.expanded,
-          styled: true,
-          swiping: false,
-          swipeOut: false,
-          type: opts.type,
-          yPosition: sourdough.opts.yPosition,
-          xPosition: sourdough.opts.xPosition,
-        },
+        dataset: liDataset,
         style: {},
       },
       [children],
@@ -377,8 +383,10 @@ class Toast {
 
     state.touch();
 
-    this.timeLeft = this.sourdough.opts.duration;
-    this.resume();
+    if (!this.opts.persist) {
+      this.timeLeft = this.sourdough.opts.duration;
+      this.resume();
+    }
   };
 
   remove = () => {
@@ -391,12 +399,14 @@ class Toast {
   };
 
   pause = () => {
+    if (this.opts.persist) return;
     this.paused = true;
     this.timeLeft = this.timeLeft - (Date.now() - this.startedAt);
     clearTimeout(this.timer);
   };
 
   resume = () => {
+    if (this.opts.persist) return;
     this.paused = false;
     this.startedAt = Date.now();
     this.timer = setTimeout(this.remove, this.timeLeft);
@@ -459,8 +469,13 @@ class Sourdough {
     this.expanded = state.expanded || state.interacting;
     this.list.dataset.expanded = this.expanded;
 
-    // Get first X toasts
-    const toasts = state.toasts.slice(-this.opts.maxToasts);
+    // Get last X toasts, but persisted toasts don't count toward the limit
+    const nonPersisted = state.toasts.filter((t) => !t.persist);
+    const capped = nonPersisted.slice(-this.opts.maxToasts);
+    const cappedIds = new Set(capped.map((t) => t.id));
+    const toasts = state.toasts.filter(
+      (t) => t.persist || cappedIds.has(t.id),
+    );
 
     // Render and cache toasts that haven't been rendered yet
     const renderedIds = [];
@@ -546,8 +561,8 @@ class Sourdough {
 
 const state = new Store();
 
-const toast = (title) => {
-  state.create({ title });
+const toast = (title, opts = {}) => {
+  state.create({ title, ...opts });
 };
 toast.message = ({ title, description, ...opts }) => {
   state.create({ title, description, ...opts });
