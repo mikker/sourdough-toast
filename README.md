@@ -15,14 +15,15 @@ npm install sourdough-toast
 Import the CSS and boot the toaster once, then call `toast` from anywhere:
 
 ```js
-import { Sourdough, toast } from "sourdough-toast";
+import { boot, toast } from "sourdough-toast";
 import "sourdough-toast/sourdough-toast.css";
 
-const sourdough = new Sourdough();
-window.addEventListener("DOMContentLoaded", () => sourdough.boot());
+window.addEventListener("DOMContentLoaded", () => boot());
 
 toast("Saved");
 ```
+
+There is one toaster: `boot(options)` is a no-op if one is already live, and `destroy()` tears it down so a differently-configured one can boot.
 
 ## Toasts
 
@@ -68,7 +69,7 @@ Toasts can also be dismissed by swiping them toward their screen edge — down w
 
 ## Options
 
-`new Sourdough(options)` accepts:
+`boot(options)` accepts:
 
 | Option              | Default    | Description                                    |
 | ------------------- | ---------- | ---------------------------------------------- |
