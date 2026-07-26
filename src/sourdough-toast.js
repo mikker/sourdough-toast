@@ -389,11 +389,20 @@ class Toast {
 
     if (!this.opts.persist) {
       this.timeLeft = this.sourdough.opts.duration;
-      this.resume();
+
+      if (state.data.interacting) {
+        // Resumed by the update loop once interaction ends
+        this.paused = true;
+      } else {
+        this.resume();
+      }
     }
   };
 
   remove = () => {
+    if (this.element.dataset.removed) return;
+
+    clearTimeout(this.timer);
     this.element.dataset.removed = "true";
 
     setTimeout(() => {
@@ -405,8 +414,10 @@ class Toast {
   pause = () => {
     if (this.opts.persist) return;
     this.paused = true;
-    this.timeLeft = this.timeLeft - (Date.now() - this.startedAt);
     clearTimeout(this.timer);
+    if (this.startedAt) {
+      this.timeLeft = this.timeLeft - (Date.now() - this.startedAt);
+    }
   };
 
   resume = () => {
@@ -503,11 +514,16 @@ class Sourdough {
       return coll;
     }, []);
 
-    // Uncache and remove toast elements that are not to be rendered
+    // Uncache and remove toast elements that are not to be rendered.
+    // Deleting from the cache before state.remove keeps the re-entrant
+    // update it triggers from finding the toast again.
     Object.keys(this.renderedToastsById).forEach((id) => {
       if (!renderedIds.includes(id)) {
-        this.renderedToastsById[id].element.remove();
+        const evicted = this.renderedToastsById[id];
         delete this.renderedToastsById[id];
+        clearTimeout(evicted.timer);
+        evicted.element.remove();
+        state.remove(id);
       }
     });
 
@@ -521,10 +537,12 @@ class Sourdough {
     }
 
     for (const [index, t] of toastsToRender.entries()) {
-      if (t.paused && !state.interacting) {
-        t.resume();
-      } else if (!t.paused && state.interacting) {
-        t.pause();
+      if (!t.element.dataset.removed) {
+        if (t.paused && !state.interacting) {
+          t.resume();
+        } else if (!t.paused && state.interacting) {
+          t.pause();
+        }
       }
 
       t.element.dataset.index = index;
