@@ -255,7 +255,7 @@ class Store {
   };
 
   clear = () => {
-    this.#set(() => ({ toasts: [] }));
+    this.#set(() => ({ toasts: [], expanded: false, interacting: false }));
   };
 
   expand = () => {
