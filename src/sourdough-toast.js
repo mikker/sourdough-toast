@@ -243,6 +243,8 @@ class Store extends EventTarget {
     this.#set((data) => ({
       toasts: [...data.toasts, toast],
     }));
+
+    return id;
   };
 
   remove = (id) => {
@@ -269,6 +271,10 @@ class Store extends EventTarget {
 } // }}}
 
 // {{{ class Toast
+
+// Rendered toasts by id, so toast.dismiss() can play the exit animation
+const renderedToasts = new Map();
+
 class Toast {
   constructor(sourdough, opts = {}) {
     this.sourdough = sourdough;
@@ -378,6 +384,8 @@ class Toast {
     );
 
     this.element = li;
+
+    renderedToasts.set(opts.id, this);
   }
 
   mount = () => {
@@ -403,6 +411,7 @@ class Toast {
     if (this.element.dataset.removed) return;
 
     clearTimeout(this.timer);
+    renderedToasts.delete(this.opts.id);
     this.element.dataset.removed = "true";
 
     setTimeout(() => {
@@ -521,6 +530,7 @@ class Sourdough {
       if (!renderedIds.includes(id)) {
         const evicted = this.renderedToastsById[id];
         delete this.renderedToastsById[id];
+        renderedToasts.delete(id);
         clearTimeout(evicted.timer);
         evicted.element.remove();
         state.remove(id);
@@ -598,22 +608,31 @@ class Sourdough {
 const state = new Store();
 
 const toast = (title, opts = {}) => {
-  state.create({ title, ...opts });
+  return state.create({ title, ...opts });
 };
 toast.message = ({ title, description, ...opts }) => {
-  state.create({ title, description, ...opts });
+  return state.create({ title, description, ...opts });
 };
 toast.success = (title, opts = {}) => {
-  state.create({ title, type: "success", ...opts });
+  return state.create({ title, type: "success", ...opts });
 };
 toast.info = (title, opts = {}) => {
-  state.create({ title, type: "info", ...opts });
+  return state.create({ title, type: "info", ...opts });
 };
 toast.warning = (title, opts = {}) => {
-  state.create({ title, type: "warning", ...opts });
+  return state.create({ title, type: "warning", ...opts });
 };
 toast.error = (title, opts = {}) => {
-  state.create({ title, type: "error", ...opts });
+  return state.create({ title, type: "error", ...opts });
+};
+toast.dismiss = (id) => {
+  const rendered = renderedToasts.get(id);
+
+  if (rendered) {
+    rendered.remove();
+  } else {
+    state.remove(id);
+  }
 };
 
 export { toast, Sourdough, h };
