@@ -29,6 +29,7 @@ html[dir="rtl"],
   --sourdough-background: white;
   --sourdough-foreground: hsl(0deg 0% 0%);
   --sourdough-border-color: hsl(0, 0%, 93%);
+  --mobile-offset: 16px;
   --toast-close-button-top: 10px;
   --toast-close-button-inset-inline-end: 10px;
 
@@ -72,8 +73,6 @@ html[dir="rtl"],
   position: absolute;
   opacity: 0;
   transform: var(--y);
-  /* https://stackoverflow.com/questions/48124372/pointermove-event-not-working-with-touch-why-not */
-  touch-action: none;
   will-change: transform, opacity, height;
   transition:
     transform 400ms,
@@ -380,33 +379,32 @@ html[dir="rtl"],
 @media (max-width: 600px) {
   [data-sourdough-toaster] {
     position: fixed;
-    --mobile-offset: 16px;
-    right: var(--mobile-offset);
-    left: var(--mobile-offset);
+    right: max(var(--mobile-offset), env(safe-area-inset-right));
+    left: max(var(--mobile-offset), env(safe-area-inset-left));
     width: 100%;
   }
 
   [data-sourdough-toaster] [data-sourdough-toast] {
     left: 0;
     right: 0;
-    width: calc(100% - 32px);
+    width: calc(100% - var(--mobile-offset) * 2);
   }
 
   [data-sourdough-toaster][data-x-position="left"] {
-    left: var(--mobile-offset);
+    left: max(var(--mobile-offset), env(safe-area-inset-left));
   }
 
   [data-sourdough-toaster][data-y-position="bottom"] {
-    bottom: 20px;
+    bottom: max(var(--mobile-offset), env(safe-area-inset-bottom));
   }
 
   [data-sourdough-toaster][data-y-position="top"] {
-    top: 20px;
+    top: max(var(--mobile-offset), env(safe-area-inset-top));
   }
 
   [data-sourdough-toaster][data-x-position="center"] {
-    left: var(--mobile-offset);
-    right: var(--mobile-offset);
+    left: max(var(--mobile-offset), env(safe-area-inset-left));
+    right: max(var(--mobile-offset), env(safe-area-inset-right));
     transform: none;
   }
 }
