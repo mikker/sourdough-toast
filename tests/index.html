@@ -13,7 +13,12 @@
     <script type="module">
       import { Sourdough, toast } from "../src/sourdough-toast.js";
 
-      const sourdough = new Sourdough();
+      // Tests can tweak Sourdough options via query params, e.g. ?duration=500
+      const params = new URLSearchParams(location.search);
+      const options = {};
+      if (params.has("duration")) options.duration = Number(params.get("duration"));
+
+      const sourdough = new Sourdough(options);
 
       window.addEventListener("DOMContentLoaded", () => {
         sourdough.boot();
