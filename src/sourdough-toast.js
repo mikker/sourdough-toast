@@ -555,18 +555,16 @@ class Sourdough {
     );
 
     // Render and cache toasts that haven't been rendered yet
-    const renderedIds = [];
-    const toastsToRender = toasts.reduce((coll, t) => {
-      renderedIds.push(t.id);
-      coll.push(this.renderedToastsById[t.id] || this.createToast(t));
-      return coll;
-    }, []);
+    const renderedIds = new Set(toasts.map((t) => t.id));
+    const toastsToRender = toasts.map(
+      (t) => this.renderedToastsById[t.id] || this.createToast(t),
+    );
 
     // Uncache and remove toast elements that are not to be rendered.
     // Deleting from the cache before state.remove keeps the re-entrant
     // update it triggers from finding the toast again.
     Object.keys(this.renderedToastsById).forEach((id) => {
-      if (!renderedIds.includes(id)) {
+      if (!renderedIds.has(id)) {
         const evicted = this.renderedToastsById[id];
         delete this.renderedToastsById[id];
         renderedToasts.delete(id);
@@ -584,6 +582,13 @@ class Sourdough {
         `${front.element.offsetHeight}px`,
       );
     }
+
+    // Each toast is offset by the heights of the toasts after it plus the
+    // gaps between them. Unmounted toasts have no height yet (NaN), which
+    // the `offset || 0` guard below turns into 0.
+    const boxHeights = toastsToRender.map((t) => t.initialHeight + this.opts.gap);
+    const totalHeight = boxHeights.reduce((sum, height) => sum + height, 0);
+    let heightBefore = 0;
 
     for (const [index, t] of toastsToRender.entries()) {
       // A toast mid-swipe manages its own timer until the swipe ends
@@ -611,22 +616,9 @@ class Sourdough {
         this.expanded ? "auto" : `${t.initialHeight}px`,
       );
 
-      // Calculate offset by adding all the heights of the toasts before
-      // the current one + the gap between them.
-      // Note: We're calculating the total height once per loop which is
-      // not ideal.
-      const [heightBefore, totalHeight] = toastsToRender.reduce(
-        ([before, total], t, i) => {
-          const boxHeight = t.initialHeight + this.opts.gap;
-          if (i < index) before += boxHeight;
-          total += boxHeight;
-          return [before, total];
-        },
-        [0, 0],
-      );
+      const offset = totalHeight - heightBefore - boxHeights[index];
+      heightBefore += boxHeights[index];
 
-      const offset =
-        totalHeight - heightBefore - t.initialHeight - this.opts.gap;
       t.element.style.setProperty(
         "--offset",
         `${t.element.dataset.removed ? "0" : offset || 0}px`,
