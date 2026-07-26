@@ -1,8 +1,15 @@
 {
   "name": "sourdough-toast",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Delicious Sourdough Toast",
+  "type": "module",
   "main": "src/sourdough-toast.js",
+  "exports": {
+    ".": "./src/sourdough-toast.js",
+    "./sourdough-toast.css": "./src/sourdough-toast.css",
+    "./style.css": "./src/sourdough-toast.css"
+  },
+  "sideEffects": false,
   "files": [
     "src"
   ],
@@ -15,7 +22,12 @@
     "test": "playwright test",
     "test:serve": "serve -l 3030"
   },
-  "keywords": [],
+  "keywords": [
+    "toast",
+    "notifications",
+    "vanilla-js",
+    "sonner"
+  ],
   "author": "Mikkel Malmberg (@mikker)",
   "license": "MIT",
   "devDependencies": {
