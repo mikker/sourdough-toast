@@ -252,6 +252,66 @@ test("Escape while the close button is focused dismisses the toast", async ({
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
 });
 
+test("swiping a toast toward the screen edge dismisses it", async ({
+  page,
+}) => {
+  await page.goto("/tests?duration=60000");
+  await page.getByRole("button", { name: "Basic" }).click();
+
+  const toast = page.locator("[data-sourdough-toast]");
+  const box = await toast.boundingBox();
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  for (let i = 1; i <= 5; i++) {
+    await page.mouse.move(x, y + (80 / 5) * i);
+  }
+  await page.mouse.up();
+
+  await expect(toast).toHaveCount(0);
+});
+
+test("an abandoned swipe leaves the toast in place", async ({ page }) => {
+  await page.goto("/tests?duration=60000");
+  await page.getByRole("button", { name: "Basic" }).click();
+
+  const toast = page.locator("[data-sourdough-toast]");
+  const box = await toast.boundingBox();
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+
+  // Drag only 15px, slowly, so neither distance nor velocity dismisses
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  for (let i = 1; i <= 3; i++) {
+    await page.mouse.move(x, y + 5 * i);
+    await page.waitForTimeout(100);
+  }
+  await page.mouse.up();
+
+  await expect(toast).toHaveCount(1);
+  await expect(toast).toHaveAttribute("data-swiping", "false");
+  const swipeAmount = await toast.evaluate((el) =>
+    el.style.getPropertyValue("--swipe-amount"),
+  );
+  expect(swipeAmount).toBe("");
+});
+
+test("clicking a data-toast-dismiss button is not hijacked by swipe", async ({
+  page,
+}) => {
+  await page.goto("/tests?duration=60000");
+  await page.getByRole("button", { name: "With HTML" }).click();
+
+  await page
+    .locator("[data-sourdough-toast] [data-toast-dismiss]")
+    .click();
+
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
+});
+
 test("persisted toasts don't count toward maxToasts", async ({ page }) => {
   await page.getByRole("button", { name: "Persist", exact: true }).click();
   await page.getByRole("button", { name: "Basic" }).click();
