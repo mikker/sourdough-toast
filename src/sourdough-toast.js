@@ -14,6 +14,13 @@ const DEFAULT_OPTIONS = {
   richColors: false,
 };
 
+// Matches the exit transition duration in the CSS
+const REMOVE_DELAY_MS = 400;
+
+// Swiping past either threshold dismisses the toast
+const SWIPE_THRESHOLD_PX = 45;
+const SWIPE_VELOCITY = 0.11;
+
 let toastsCounter = 0;
 
 // {{{ Helpers
@@ -21,11 +28,10 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 const svgTags = ["svg", "path", "line", "circle"];
 
-const h = (tag, props = {}, children = [], isSvg = false) => {
-  const element =
-    svgTags.includes(tag) || isSvg
-      ? document.createElementNS(SVG_NS, tag)
-      : document.createElement(tag);
+const h = (tag, props = {}, children = []) => {
+  const element = svgTags.includes(tag)
+    ? document.createElementNS(SVG_NS, tag)
+    : document.createElement(tag);
 
   for (const [key, value] of Object.entries(props)) {
     if (key === "style") {
@@ -45,16 +51,10 @@ const h = (tag, props = {}, children = [], isSvg = false) => {
     }
   }
 
-  for (const child of children) {
+  for (const child of [children].flat(Infinity)) {
     if (typeof child === "string") {
       element.appendChild(document.createTextNode(child));
-      continue;
-    } else if (Array.isArray(child)) {
-      for (const c of child) {
-        element.appendChild(c);
-      }
-      continue;
-    } else if (child instanceof HTMLElement || child instanceof SVGElement) {
+    } else {
       element.appendChild(child);
     }
   }
@@ -204,12 +204,10 @@ function getDocumentDirection() {
 // }}}
 
 // {{{ class Store
-class Store extends EventTarget {
+class Store {
   #subscribers = [];
 
   constructor() {
-    super();
-
     this.data = {
       toasts: [],
       expanded: false,
@@ -232,7 +230,7 @@ class Store extends EventTarget {
   #set = (fn) => {
     const change = fn({ ...this.data });
     this.data = { ...this.data, ...change };
-    this.#publish(this.data);
+    this.#publish();
   };
 
   touch = () => {
@@ -415,7 +413,7 @@ class Toast {
 
       const velocity = Math.abs(delta) / (Date.now() - startedAt);
 
-      if (Math.abs(delta) >= 45 || velocity >= 0.11) {
+      if (Math.abs(delta) >= SWIPE_THRESHOLD_PX || velocity >= SWIPE_VELOCITY) {
         this.element.dataset.swipeOut = "true";
         this.remove();
       } else {
@@ -458,7 +456,7 @@ class Toast {
     setTimeout(() => {
       this.element.remove();
       state.remove(this.opts.id);
-    }, 400);
+    }, REMOVE_DELAY_MS);
   };
 
   pause = () => {
