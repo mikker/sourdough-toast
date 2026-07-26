@@ -375,8 +375,59 @@ class Toast {
 
     this.element = li;
 
+    this.setupSwipe();
+
     renderedToasts.set(opts.id, this);
   }
+
+  setupSwipe = () => {
+    let startY, startedAt, delta;
+
+    this.element.addEventListener("pointerdown", (event) => {
+      if (!event.isPrimary) return;
+      if (event.target.closest("button, a, [data-toast-dismiss]")) return;
+
+      this.element.setPointerCapture(event.pointerId);
+      startY = event.clientY;
+      startedAt = Date.now();
+      delta = 0;
+      this.element.dataset.swiping = "true";
+      // Touch has no hover to pause the timer, so pause explicitly
+      this.pause();
+    });
+
+    this.element.addEventListener("pointermove", (event) => {
+      if (this.element.dataset.swiping !== "true") return;
+
+      // Only allow movement toward the dismissal edge
+      delta = event.clientY - startY;
+      if (this.sourdough.opts.yPosition === "top") {
+        delta = Math.min(delta, 0);
+      } else {
+        delta = Math.max(delta, 0);
+      }
+
+      this.element.style.setProperty("--swipe-amount", `${delta}px`);
+    });
+
+    const endSwipe = () => {
+      if (this.element.dataset.swiping !== "true") return;
+
+      const velocity = Math.abs(delta) / (Date.now() - startedAt);
+
+      if (Math.abs(delta) >= 45 || velocity >= 0.11) {
+        this.element.dataset.swipeOut = "true";
+        this.remove();
+      } else {
+        this.element.style.removeProperty("--swipe-amount");
+        this.element.dataset.swiping = "false";
+        if (!state.data.interacting) this.resume();
+      }
+    };
+
+    this.element.addEventListener("pointerup", endSwipe);
+    this.element.addEventListener("pointercancel", endSwipe);
+  };
 
   mount = () => {
     this.element.dataset.mounted = "true";

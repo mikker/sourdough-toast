@@ -82,6 +82,8 @@ html[dir="rtl"],
   box-sizing: border-box;
   outline: none;
   overflow-wrap: anywhere;
+  /* Without this the browser pans instead of firing pointermove during a swipe */
+  touch-action: none;
 }
 
 [data-sourdough-toast][data-styled="true"] {
@@ -225,6 +227,27 @@ html[dir="rtl"],
   opacity: 1;
 }
 
+/* Leave a ghost div to avoid setting hover to false when swiping out */
+[data-sourdough-toast][data-swiping="true"]:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100%;
+}
+
+[data-sourdough-toast][data-y-position="top"][data-swiping="true"]:before {
+  /* y 50% needed to distribute height additional height evenly */
+  bottom: 50%;
+  transform: scaleY(3) translateY(50%);
+}
+
+[data-sourdough-toast][data-y-position="bottom"][data-swiping="true"]:before {
+  /* y -50% needed to distribute height additional height evenly */
+  top: 50%;
+  transform: scaleY(3) translateY(-50%);
+}
+
 /* Leave a ghost div to avoid setting hover to false when transitioning out */
 [data-sourdough-toast][data-swiping="false"][data-removed="true"]:before {
   content: "";
@@ -290,6 +313,34 @@ html[dir="rtl"],
 /* Bump up the height to make sure hover state doesn't get set to false */
 [data-sourdough-toast][data-removed="true"][data-front="false"]:before {
   height: calc(var(--initial-height) + 20%);
+}
+
+[data-sourdough-toast][data-swiping="true"] {
+  transform: var(--y) translateY(var(--swipe-amount, 0px));
+  transition: none;
+}
+
+[data-sourdough-toast][data-swipe-out="true"][data-y-position="bottom"],
+[data-sourdough-toast][data-swipe-out="true"][data-y-position="top"] {
+  animation: swipe-out 200ms ease-out forwards;
+}
+
+@keyframes swipe-out {
+  from {
+    transform: translateY(
+      calc(var(--lift) * var(--offset) + var(--swipe-amount))
+    );
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(
+      calc(
+        var(--lift) * var(--offset) + var(--swipe-amount) + var(--lift) * -100%
+      )
+    );
+    opacity: 0;
+  }
 }
 
 @media (max-width: 600px) {
