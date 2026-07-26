@@ -254,6 +254,10 @@ class Store {
     }));
   };
 
+  clear = () => {
+    this.#set(() => ({ toasts: [] }));
+  };
+
   expand = () => {
     this.#set(() => ({ expanded: true }));
   };
@@ -273,7 +277,8 @@ class Store {
 
 // {{{ class Toast
 
-// Rendered toasts by id, so toast.dismiss() can play the exit animation
+// Rendered toasts by id, so the update loop and toast.dismiss() can find
+// the live Toast for a state entry
 const renderedToasts = new Map();
 
 class Toast {
@@ -450,10 +455,12 @@ class Toast {
     if (this.element.dataset.removed) return;
 
     clearTimeout(this.timer);
-    renderedToasts.delete(this.opts.id);
     this.element.dataset.removed = "true";
 
     setTimeout(() => {
+      // Deleting from the registry before state.remove keeps the re-entrant
+      // update it triggers from finding the toast again
+      renderedToasts.delete(this.opts.id);
       this.element.remove();
       state.remove(this.opts.id);
     }, REMOVE_DELAY_MS);
@@ -477,15 +484,14 @@ class Toast {
 }
 // }}}
 
+// The one live (booted) Sourdough instance
+let instance = null;
+
 class Sourdough {
   constructor(opts = {}) {
     this.opts = Object.assign({}, DEFAULT_OPTIONS, opts);
 
     this.expanded = this.opts.expandedByDefault;
-    if (this.opts.expandedByDefault) setTimeout(state.expand);
-
-    // Cache rendered toasts by id
-    this.renderedToastsById = {};
 
     this.list = h("ol", {
       dir: getDocumentDirection(),
@@ -515,7 +521,7 @@ class Sourdough {
       if (event.key !== "Escape") return;
 
       const element = event.target.closest("[data-sourdough-toast]");
-      const toast = Object.values(this.renderedToastsById).find(
+      const toast = [...renderedToasts.values()].find(
         (t) => t.element === element,
       );
       if (toast) toast.remove();
@@ -531,15 +537,26 @@ class Sourdough {
       },
       [this.list],
     );
-
-    this.subscription = state.subscribe(this.update.bind(this));
   }
 
   boot = () => {
-    if (document.querySelector("[data-sourdough]")) {
-      return;
-    }
+    if (instance) return;
+
+    instance = this;
+    this.subscription = state.subscribe(this.update.bind(this));
+    if (this.opts.expandedByDefault) setTimeout(state.expand);
     document.body.appendChild(this.element);
+  };
+
+  destroy = () => {
+    if (instance !== this) return;
+
+    this.subscription();
+    this.element.remove();
+    for (const toast of renderedToasts.values()) clearTimeout(toast.timer);
+    renderedToasts.clear();
+    state.clear();
+    instance = null;
   };
 
   update = (data) => {
@@ -554,25 +571,23 @@ class Sourdough {
       (t) => t.persist || cappedIds.has(t.id),
     );
 
-    // Render and cache toasts that haven't been rendered yet
+    // Render toasts that haven't been rendered yet
     const renderedIds = new Set(toasts.map((t) => t.id));
     const toastsToRender = toasts.map(
-      (t) => this.renderedToastsById[t.id] || this.createToast(t),
+      (t) => renderedToasts.get(t.id) || this.createToast(t),
     );
 
-    // Uncache and remove toast elements that are not to be rendered.
-    // Deleting from the cache before state.remove keeps the re-entrant
+    // Remove toast elements that are not to be rendered.
+    // Deleting from the registry before state.remove keeps the re-entrant
     // update it triggers from finding the toast again.
-    Object.keys(this.renderedToastsById).forEach((id) => {
+    for (const [id, evicted] of renderedToasts) {
       if (!renderedIds.has(id)) {
-        const evicted = this.renderedToastsById[id];
-        delete this.renderedToastsById[id];
         renderedToasts.delete(id);
         clearTimeout(evicted.timer);
         evicted.element.remove();
         state.remove(id);
       }
-    });
+    }
 
     const front = toastsToRender[toastsToRender.length - 1];
 
@@ -628,7 +643,6 @@ class Sourdough {
 
   createToast = (opts) => {
     const toast = new Toast(this, opts);
-    this.renderedToastsById[opts.id] = toast;
     this.list.appendChild(toast.element);
 
     setTimeout(toast.mount, 0);
