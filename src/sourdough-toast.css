@@ -26,8 +26,9 @@ html[dir="rtl"],
 [data-sourdough-toaster] {
   --border-radius: 12px;
   --font-family: system-ui, sans-serif;
-  --background: white;
-  --foreground: hsl(0deg 0% 0%);
+  --sourdough-background: white;
+  --sourdough-foreground: hsl(0deg 0% 0%);
+  --sourdough-border-color: hsl(0, 0%, 93%);
   --toast-close-button-top: 10px;
   --toast-close-button-inset-inline-end: 10px;
 
@@ -86,9 +87,9 @@ html[dir="rtl"],
 
 [data-sourdough-toast][data-styled="true"] {
   padding: var(--padding, 16px);
-  background: var(--background);
-  border: var(--border-width, 1px) solid var(--border-color);
-  color: var(--foreground);
+  background: var(--sourdough-background);
+  border: var(--border-width, 1px) solid var(--sourdough-border-color);
+  color: var(--sourdough-foreground);
   border-radius: var(--border-radius);
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
   width: var(--width);
@@ -222,7 +223,7 @@ html[dir="rtl"],
   justify-content: center;
   align-items: center;
   padding: 0;
-  color: var(--foreground);
+  color: var(--sourdough-foreground);
   opacity: 0;
   cursor: pointer;
   z-index: 1;
@@ -412,8 +413,8 @@ html[dir="rtl"],
 
 [data-sourdough-toaster][data-theme="light"] {
   --sourdough-background: #fff;
-  --sourdough-border-color: var(--white);
-  --sourdough-foreground: var(--gray12);
+  --sourdough-border-color: hsl(0, 0%, 93%);
+  --sourdough-foreground: hsl(0, 0%, 9%);
 
   --success-bg: hsl(143, 85%, 96%);
   --success-border: hsl(145, 92%, 91%);
@@ -436,20 +437,20 @@ html[dir="rtl"],
   [data-sourdough-toast][data-invert="true"] {
   --sourdough-background: #000;
   --sourdough-border-color: hsl(0, 0%, 20%);
-  --sourdough-foreground: var(--gray1);
+  --sourdough-foreground: hsl(0, 0%, 99%);
 }
 
 [data-sourdough-toaster][data-theme="dark"]
   [data-sourdough-toast][data-invert="true"] {
   --sourdough-background: #fff;
-  --sourdough-border-color: var(--gray3);
-  --sourdough-foreground: var(--gray12);
+  --sourdough-border-color: hsl(0, 0%, 95%);
+  --sourdough-foreground: hsl(0, 0%, 9%);
 }
 
 [data-sourdough-toaster][data-theme="dark"] {
   --sourdough-background: #000;
   --sourdough-border-color: hsl(0, 0%, 20%);
-  --sourdough-foreground: var(--gray1);
+  --sourdough-foreground: hsl(0, 0%, 99%);
 
   --success-bg: hsl(150, 100%, 6%);
   --success-border: hsl(147, 100%, 12%);
