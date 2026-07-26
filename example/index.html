@@ -27,7 +27,7 @@
       href="/example/favicon-16x16.png"
     />
     <script type="module">
-      import { Sourdough, toast, h } from "../src/sourdough-toast.js";
+      import { boot, toast, h } from "../src/sourdough-toast.js";
       import hljs from "https://esm.run/highlight.js@11.9.0";
       import javascript from "https://esm.run/highlight.js@11.9.0/lib/languages/javascript";
       hljs.registerLanguage("javascript", javascript);
@@ -36,10 +36,8 @@
       window.toast = toast;
       window.h = h;
 
-      const sourdough = new Sourdough();
-
       window.addEventListener("DOMContentLoaded", () => {
-        sourdough.boot();
+        boot();
       });
     </script>
   </head>
@@ -83,13 +81,9 @@
 
     <section>
       <h2 class="h2 mb-2">Usage</h2>
-      <pre><code class="language-javascript">import { Sourdough, toast } from "sourdough-toast";
+      <pre><code class="language-javascript">import { boot, toast } from "sourdough-toast";
 
-const sourdough = new Sourdough();
-
-window.addEventListener("DOMContentLoaded", () => {
-  sourdough.boot();
-});
+window.addEventListener("DOMContentLoaded", () => boot());
 
 toast("Hi!");</code></pre>
     </section>
@@ -97,12 +91,9 @@ toast("Hi!");</code></pre>
     <section>
       <h2 class="h2 mb-2">Usage (CDN)</h2>
       <pre><code class="language-html">&lt;script type="module"&gt;
-  import { Sourdough, toast } from "https://esm.run/sourdough-toast";
-  const sourdough = new Sourdough();
+  import { boot, toast } from "https://esm.run/sourdough-toast";
 
-  window.addEventListener("DOMContentLoaded", () =&gt; {
-    sourdough.boot();
-  });
+  window.addEventListener("DOMContentLoaded", () =&gt; boot());
 
   window.toast = toast;
 &lt;/script&gt;

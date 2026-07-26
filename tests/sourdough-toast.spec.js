@@ -312,6 +312,45 @@ test("clicking a data-toast-dismiss button is not hijacked by swipe", async ({
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
 });
 
+test("booting while a toaster is live is a no-op", async ({ page }) => {
+  await page.evaluate(() => {
+    window.boot({ yPosition: "top" });
+    window.toast("Singleton toast");
+  });
+
+  await expect(page.locator("[data-sourdough-toaster]")).toHaveCount(1);
+  await expect(page.locator("[data-sourdough-toaster]")).toHaveAttribute(
+    "data-y-position",
+    "bottom",
+  );
+  await expect(page.getByText("Singleton toast", { exact: true })).toHaveCount(
+    1,
+  );
+});
+
+test("destroy() removes the toaster and a new instance can boot", async ({
+  page,
+}) => {
+  await page.getByRole("button", { name: "Basic" }).click();
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
+
+  await page.evaluate(() => window.destroy());
+
+  await expect(page.locator("[data-sourdough-toaster]")).toHaveCount(0);
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
+
+  await page.evaluate(() => {
+    window.boot({ yPosition: "top" });
+    window.toast("After reboot");
+  });
+
+  await expect(page.locator("[data-sourdough-toaster]")).toHaveAttribute(
+    "data-y-position",
+    "top",
+  );
+  await expect(page.getByText("After reboot", { exact: true })).toHaveCount(1);
+});
+
 test("persisted toasts don't count toward maxToasts", async ({ page }) => {
   await page.getByRole("button", { name: "Persist", exact: true }).click();
   await page.getByRole("button", { name: "Basic" }).click();

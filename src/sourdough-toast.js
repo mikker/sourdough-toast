@@ -78,117 +78,118 @@ const svgAttrs = {
 
 // Built lazily so importing this module doesn't require a DOM
 let icons;
-const getIcons = () => (icons ??= {
-  success: h("svg", svgAttrs, [h("path", { d: "M20 6 9 17l-5-5" })]),
-  info: h("svg", svgAttrs, [
-    h("circle", { cx: "12", cy: "12", r: "10" }),
-    h("path", { d: "M12 16v-4" }),
-    h("path", { d: "M12 8h.01" }),
-  ]),
-  warning: h("svg", svgAttrs, [
-    h("path", {
-      d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
-    }),
-    h("path", { d: "M12 9v4" }),
-    h("path", { d: "M12 17h.01" }),
-  ]),
-  error: h("svg", svgAttrs, [
-    h("circle", { cx: "12", cy: "12", r: "10" }),
-    h("path", { d: "m4.9 4.9 14.2 14.2" }),
-  ]),
-  spinner: h(
-    "svg",
-    {
-      ...svgAttrs,
-      viewBox: "0 0 2400 2400",
-      stroke: "black",
-      "data-sourdough-spinner": "",
-      "stroke-width": "200",
-      "stroke-linecap": "round",
-    },
-    [
-      h("line", { x1: "1200", y1: "600", x2: "1200", y2: "100" }),
-      h("line", {
-        opacity: "0.5",
-        x1: "1200",
-        y1: "2300",
-        x2: "1200",
-        y2: "1800",
+const getIcons = () =>
+  (icons ??= {
+    success: h("svg", svgAttrs, [h("path", { d: "M20 6 9 17l-5-5" })]),
+    info: h("svg", svgAttrs, [
+      h("circle", { cx: "12", cy: "12", r: "10" }),
+      h("path", { d: "M12 16v-4" }),
+      h("path", { d: "M12 8h.01" }),
+    ]),
+    warning: h("svg", svgAttrs, [
+      h("path", {
+        d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
       }),
-      h("line", {
-        opacity: "0.917",
-        x1: "900",
-        y1: "680.4",
-        x2: "650",
-        y2: "247.4",
-      }),
-      h("line", {
-        opacity: "0.417",
-        x1: "1750",
-        y1: "2152.6",
-        x2: "1500",
-        y2: "1719.6",
-      }),
-      h("line", {
-        opacity: "0.833",
-        x1: "680.4",
-        y1: "900",
-        x2: "247.4",
-        y2: "650",
-      }),
-      h("line", {
-        opacity: "0.333",
-        x1: "2152.6",
-        y1: "1750",
-        x2: "1719.6",
-        y2: "1500",
-      }),
-      h("line", {
-        opacity: "0.75",
-        x1: "600",
-        y1: "1200",
-        x2: "100",
-        y2: "1200",
-      }),
-      h("line", {
-        opacity: "0.25",
-        x1: "2300",
-        y1: "1200",
-        x2: "1800",
-        y2: "1200",
-      }),
-      h("line", {
-        opacity: "0.667",
-        x1: "680.4",
-        y1: "1500",
-        x2: "247.4",
-        y2: "1750",
-      }),
-      h("line", {
-        opacity: "0.167",
-        x1: "2152.6",
-        y1: "650",
-        x2: "1719.6",
-        y2: "900",
-      }),
-      h("line", {
-        opacity: "0.583",
-        x1: "900",
-        y1: "1719.6",
-        x2: "650",
-        y2: "2152.6",
-      }),
-      h("line", {
-        opacity: "0.083",
-        x1: "1750",
-        y1: "247.4",
-        x2: "1500",
-        y2: "680.4",
-      }),
-    ],
-  ),
-  close: h("svg", svgAttrs, [h("path", { d: "M6 18 18 6M6 6l12 12" })]),
-});
+      h("path", { d: "M12 9v4" }),
+      h("path", { d: "M12 17h.01" }),
+    ]),
+    error: h("svg", svgAttrs, [
+      h("circle", { cx: "12", cy: "12", r: "10" }),
+      h("path", { d: "m4.9 4.9 14.2 14.2" }),
+    ]),
+    spinner: h(
+      "svg",
+      {
+        ...svgAttrs,
+        viewBox: "0 0 2400 2400",
+        stroke: "black",
+        "data-sourdough-spinner": "",
+        "stroke-width": "200",
+        "stroke-linecap": "round",
+      },
+      [
+        h("line", { x1: "1200", y1: "600", x2: "1200", y2: "100" }),
+        h("line", {
+          opacity: "0.5",
+          x1: "1200",
+          y1: "2300",
+          x2: "1200",
+          y2: "1800",
+        }),
+        h("line", {
+          opacity: "0.917",
+          x1: "900",
+          y1: "680.4",
+          x2: "650",
+          y2: "247.4",
+        }),
+        h("line", {
+          opacity: "0.417",
+          x1: "1750",
+          y1: "2152.6",
+          x2: "1500",
+          y2: "1719.6",
+        }),
+        h("line", {
+          opacity: "0.833",
+          x1: "680.4",
+          y1: "900",
+          x2: "247.4",
+          y2: "650",
+        }),
+        h("line", {
+          opacity: "0.333",
+          x1: "2152.6",
+          y1: "1750",
+          x2: "1719.6",
+          y2: "1500",
+        }),
+        h("line", {
+          opacity: "0.75",
+          x1: "600",
+          y1: "1200",
+          x2: "100",
+          y2: "1200",
+        }),
+        h("line", {
+          opacity: "0.25",
+          x1: "2300",
+          y1: "1200",
+          x2: "1800",
+          y2: "1200",
+        }),
+        h("line", {
+          opacity: "0.667",
+          x1: "680.4",
+          y1: "1500",
+          x2: "247.4",
+          y2: "1750",
+        }),
+        h("line", {
+          opacity: "0.167",
+          x1: "2152.6",
+          y1: "650",
+          x2: "1719.6",
+          y2: "900",
+        }),
+        h("line", {
+          opacity: "0.583",
+          x1: "900",
+          y1: "1719.6",
+          x2: "650",
+          y2: "2152.6",
+        }),
+        h("line", {
+          opacity: "0.083",
+          x1: "1750",
+          y1: "247.4",
+          x2: "1500",
+          y2: "680.4",
+        }),
+      ],
+    ),
+    close: h("svg", svgAttrs, [h("path", { d: "M6 18 18 6M6 6l12 12" })]),
+  });
 
 function getDocumentDirection() {
   if (typeof window === "undefined") return "ltr";
@@ -254,6 +255,10 @@ class Store {
     }));
   };
 
+  clear = () => {
+    this.#set(() => ({ toasts: [], expanded: false, interacting: false }));
+  };
+
   expand = () => {
     this.#set(() => ({ expanded: true }));
   };
@@ -273,7 +278,8 @@ class Store {
 
 // {{{ class Toast
 
-// Rendered toasts by id, so toast.dismiss() can play the exit animation
+// Rendered toasts by id, so the update loop and toast.dismiss() can find
+// the live Toast for a state entry
 const renderedToasts = new Map();
 
 class Toast {
@@ -293,14 +299,17 @@ class Toast {
       );
     }
 
-    const showCloseButton = opts.persist || opts.closeButton === true || (this.sourdough.opts.closeButton === true && opts.closeButton !== false);
+    const showCloseButton =
+      opts.persist ||
+      opts.closeButton === true ||
+      (this.sourdough.opts.closeButton === true && opts.closeButton !== false);
     if (showCloseButton) {
       const closeButton = h(
         "button",
         {
           dataset: { closeButton: "" },
           type: "button",
-          "aria-label": "Close"
+          "aria-label": "Close",
         },
         [getIcons().close.cloneNode(true)],
       );
@@ -325,14 +334,18 @@ class Toast {
         description = h("div", { dataset: { description: "" } }, []);
         description.innerHTML = opts.description;
       } else {
-        description = h("div", { dataset: { description: "" } }, [opts.description]);
+        description = h("div", { dataset: { description: "" } }, [
+          opts.description,
+        ]);
       }
 
-      description.querySelectorAll("[data-toast-dismiss]").forEach(trigger => {
-        trigger.addEventListener("click", (e) => {
-          this.remove();
+      description
+        .querySelectorAll("[data-toast-dismiss]")
+        .forEach((trigger) => {
+          trigger.addEventListener("click", (e) => {
+            this.remove();
+          });
         });
-      });
 
       contentChildren.push(description);
     }
@@ -450,10 +463,12 @@ class Toast {
     if (this.element.dataset.removed) return;
 
     clearTimeout(this.timer);
-    renderedToasts.delete(this.opts.id);
     this.element.dataset.removed = "true";
 
     setTimeout(() => {
+      // Deleting from the registry before state.remove keeps the re-entrant
+      // update it triggers from finding the toast again
+      renderedToasts.delete(this.opts.id);
       this.element.remove();
       state.remove(this.opts.id);
     }, REMOVE_DELAY_MS);
@@ -477,15 +492,14 @@ class Toast {
 }
 // }}}
 
+// The one live (booted) Sourdough instance
+let instance = null;
+
 class Sourdough {
   constructor(opts = {}) {
     this.opts = Object.assign({}, DEFAULT_OPTIONS, opts);
 
     this.expanded = this.opts.expandedByDefault;
-    if (this.opts.expandedByDefault) setTimeout(state.expand);
-
-    // Cache rendered toasts by id
-    this.renderedToastsById = {};
 
     this.list = h("ol", {
       dir: getDocumentDirection(),
@@ -515,7 +529,7 @@ class Sourdough {
       if (event.key !== "Escape") return;
 
       const element = event.target.closest("[data-sourdough-toast]");
-      const toast = Object.values(this.renderedToastsById).find(
+      const toast = [...renderedToasts.values()].find(
         (t) => t.element === element,
       );
       if (toast) toast.remove();
@@ -531,15 +545,26 @@ class Sourdough {
       },
       [this.list],
     );
-
-    this.subscription = state.subscribe(this.update.bind(this));
   }
 
   boot = () => {
-    if (document.querySelector("[data-sourdough]")) {
-      return;
-    }
+    if (instance) return;
+
+    instance = this;
+    this.subscription = state.subscribe(this.update.bind(this));
+    if (this.opts.expandedByDefault) setTimeout(state.expand);
     document.body.appendChild(this.element);
+  };
+
+  destroy = () => {
+    if (instance !== this) return;
+
+    this.subscription();
+    this.element.remove();
+    for (const toast of renderedToasts.values()) clearTimeout(toast.timer);
+    renderedToasts.clear();
+    state.clear();
+    instance = null;
   };
 
   update = (data) => {
@@ -550,29 +575,25 @@ class Sourdough {
     const nonPersisted = data.toasts.filter((t) => !t.persist);
     const capped = nonPersisted.slice(-this.opts.maxToasts);
     const cappedIds = new Set(capped.map((t) => t.id));
-    const toasts = data.toasts.filter(
-      (t) => t.persist || cappedIds.has(t.id),
-    );
+    const toasts = data.toasts.filter((t) => t.persist || cappedIds.has(t.id));
 
-    // Render and cache toasts that haven't been rendered yet
+    // Render toasts that haven't been rendered yet
     const renderedIds = new Set(toasts.map((t) => t.id));
     const toastsToRender = toasts.map(
-      (t) => this.renderedToastsById[t.id] || this.createToast(t),
+      (t) => renderedToasts.get(t.id) || this.createToast(t),
     );
 
-    // Uncache and remove toast elements that are not to be rendered.
-    // Deleting from the cache before state.remove keeps the re-entrant
+    // Remove toast elements that are not to be rendered.
+    // Deleting from the registry before state.remove keeps the re-entrant
     // update it triggers from finding the toast again.
-    Object.keys(this.renderedToastsById).forEach((id) => {
+    for (const [id, evicted] of renderedToasts) {
       if (!renderedIds.has(id)) {
-        const evicted = this.renderedToastsById[id];
-        delete this.renderedToastsById[id];
         renderedToasts.delete(id);
         clearTimeout(evicted.timer);
         evicted.element.remove();
         state.remove(id);
       }
-    });
+    }
 
     const front = toastsToRender[toastsToRender.length - 1];
 
@@ -586,7 +607,9 @@ class Sourdough {
     // Each toast is offset by the heights of the toasts after it plus the
     // gaps between them. Unmounted toasts have no height yet (NaN), which
     // the `offset || 0` guard below turns into 0.
-    const boxHeights = toastsToRender.map((t) => t.initialHeight + this.opts.gap);
+    const boxHeights = toastsToRender.map(
+      (t) => t.initialHeight + this.opts.gap,
+    );
     const totalHeight = boxHeights.reduce((sum, height) => sum + height, 0);
     let heightBefore = 0;
 
@@ -628,7 +651,6 @@ class Sourdough {
 
   createToast = (opts) => {
     const toast = new Toast(this, opts);
-    this.renderedToastsById[opts.id] = toast;
     this.list.appendChild(toast.element);
 
     setTimeout(toast.mount, 0);
@@ -667,4 +689,14 @@ toast.dismiss = (id) => {
   }
 };
 
-export { toast, Sourdough, h };
+// Boot the single toaster; no-op if one is already live
+const boot = (opts = {}) => {
+  if (!instance) new Sourdough(opts).boot();
+};
+
+// Tear down the live toaster so a differently-configured one can boot
+const destroy = () => {
+  if (instance) instance.destroy();
+};
+
+export { toast, boot, destroy, h };

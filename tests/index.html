@@ -11,22 +11,23 @@
     </style>
     <link rel="stylesheet" href="../src/sourdough-toast.css" />
     <script type="module">
-      import { Sourdough, toast } from "../src/sourdough-toast.js";
+      import { boot, destroy, toast } from "../src/sourdough-toast.js";
 
-      // Tests can tweak Sourdough options via query params, e.g. ?duration=500
+      // Tests can tweak toaster options via query params, e.g. ?duration=500
       const params = new URLSearchParams(location.search);
       const options = {};
-      if (params.has("duration")) options.duration = Number(params.get("duration"));
+      if (params.has("duration"))
+        options.duration = Number(params.get("duration"));
       if (params.has("closeButton"))
         options.closeButton = params.get("closeButton") === "true";
 
-      const sourdough = new Sourdough(options);
-
       window.addEventListener("DOMContentLoaded", () => {
-        sourdough.boot();
+        boot(options);
       });
 
       window.toast = toast;
+      window.boot = boot;
+      window.destroy = destroy;
     </script>
   </head>
   <body>
