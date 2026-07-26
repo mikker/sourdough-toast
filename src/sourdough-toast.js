@@ -588,7 +588,8 @@ class Sourdough {
     }
 
     for (const [index, t] of toastsToRender.entries()) {
-      if (!t.element.dataset.removed) {
+      // A toast mid-swipe manages its own timer until the swipe ends
+      if (!t.element.dataset.removed && t.element.dataset.swiping !== "true") {
         if (t.paused && !data.interacting) {
           t.resume();
         } else if (!t.paused && data.interacting) {
