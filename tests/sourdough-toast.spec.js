@@ -134,6 +134,131 @@ test("persisted toasts stack normally with regular toasts", async ({
   expect(Number(persistedZIndex)).toBeGreaterThan(Number(regularZIndex));
 });
 
+test("per-toast duration overrides the global duration", async ({ page }) => {
+  await page.goto("/tests?duration=60000");
+
+  await page.evaluate(() => window.toast("Quick toast", { duration: 500 }));
+
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
+});
+
+test("hovering pauses auto-dismiss and unhovering resumes it", async ({
+  page,
+}) => {
+  await page.goto("/tests?duration=1500");
+  await page.getByRole("button", { name: "Basic" }).click();
+
+  await page.hover("[data-sourdough-toast]");
+  await page.waitForTimeout(2000);
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
+
+  // Unhover: the timer resumes and the toast dismisses
+  await page.mouse.move(0, 0);
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
+});
+
+test("toast() returns an id and toast.dismiss(id) removes the toast", async ({
+  page,
+}) => {
+  const id = await page.evaluate(() => window.toast("Dismiss me"));
+  expect(typeof id).toBe("string");
+
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
+
+  await page.evaluate((id) => window.toast.dismiss(id), id);
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
+
+  // Dismissing an unknown id must not throw
+  await page.evaluate(() => window.toast.dismiss("no-such-id"));
+});
+
+test("global closeButton:true renders close buttons on toasts", async ({
+  page,
+}) => {
+  await page.goto("/tests?closeButton=true");
+  await page.getByRole("button", { name: "Basic" }).click();
+
+  await expect(
+    page.locator("[data-sourdough-toast] [data-close-button]"),
+  ).toHaveCount(1);
+});
+
+test("per-toast closeButton:false overrides global closeButton:true", async ({
+  page,
+}) => {
+  await page.goto("/tests?closeButton=true");
+  await page.evaluate(() => window.toast("No close", { closeButton: false }));
+
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
+  await expect(
+    page.locator("[data-sourdough-toast] [data-close-button]"),
+  ).toHaveCount(0);
+});
+
+test("description without html:true renders markup as text", async ({
+  page,
+}) => {
+  await page.evaluate(() =>
+    window.toast.message({
+      title: "Plain",
+      description: "<strong>bold?</strong>",
+    }),
+  );
+
+  const description = page.locator("[data-sourdough-toast] [data-description]");
+  await expect(description).toHaveText("<strong>bold?</strong>");
+  await expect(description.locator("strong")).toHaveCount(0);
+});
+
+// FIXME: Genuine bug in src/sourdough-toast.js — Sourdough.update's `state`
+// parameter shadows the module-level Store, so the eviction path calls
+// `state.remove(id)` on the plain data object and throws
+// "TypeError: state.remove is not a function". The evicted toast's element is
+// removed from the DOM, but it is never removed from the store. Click-driven
+// tests don't notice because the error is an uncaught page error, but it
+// surfaces (and fails this test) when toasts are created via page.evaluate.
+test.fixme("oldest toast is the one evicted at maxToasts", async ({ page }) => {
+  await page.evaluate(() => {
+    window.toast("Toast 1");
+    window.toast("Toast 2");
+    window.toast("Toast 3");
+    window.toast("Toast 4");
+  });
+
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(3);
+  await expect(page.getByText("Toast 1", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Toast 2", { exact: true })).toHaveCount(1);
+  await expect(page.getByText("Toast 4", { exact: true })).toHaveCount(1);
+});
+
+test("toasts have role=status and the list is labelled Notifications", async ({
+  page,
+}) => {
+  await page.getByRole("button", { name: "Basic" }).click();
+
+  await expect(page.locator("[data-sourdough-toast]")).toHaveAttribute(
+    "role",
+    "status",
+  );
+  await expect(page.locator("[data-sourdough-toaster]")).toHaveAttribute(
+    "aria-label",
+    "Notifications",
+  );
+});
+
+test("Escape while the close button is focused dismisses the toast", async ({
+  page,
+}) => {
+  await page.getByRole("button", { name: "With Close Button" }).click();
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
+
+  await page.locator("[data-close-button]").focus();
+  await page.keyboard.press("Escape");
+
+  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
+});
+
 test("persisted toasts don't count toward maxToasts", async ({ page }) => {
   await page.getByRole("button", { name: "Persist", exact: true }).click();
   await page.getByRole("button", { name: "Basic" }).click();

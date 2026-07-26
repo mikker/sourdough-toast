@@ -17,6 +17,8 @@
       const params = new URLSearchParams(location.search);
       const options = {};
       if (params.has("duration")) options.duration = Number(params.get("duration"));
+      if (params.has("closeButton"))
+        options.closeButton = params.get("closeButton") === "true";
 
       const sourdough = new Sourdough(options);
 
