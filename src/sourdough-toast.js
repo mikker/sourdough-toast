@@ -11,6 +11,7 @@ const DEFAULT_OPTIONS = {
   yPosition: "bottom",
   xPosition: "right",
   closeButton: false,
+  richColors: false,
 };
 
 let toastsCounter = 0;
@@ -75,7 +76,9 @@ const svgAttrs = {
   dataset: { slot: "icon" },
 };
 
-const icons = {
+// Built lazily so importing this module doesn't require a DOM
+let icons;
+const getIcons = () => (icons ??= {
   success: h("svg", svgAttrs, [h("path", { d: "M20 6 9 17l-5-5" })]),
   info: h("svg", svgAttrs, [
     h("circle", { cx: "12", cy: "12", r: "10" }),
@@ -185,7 +188,7 @@ const icons = {
     ],
   ),
   close: h("svg", svgAttrs, [h("path", { d: "M6 18 18 6M6 6l12 12" })]),
-};
+});
 
 function getDocumentDirection() {
   if (typeof window === "undefined") return "ltr";
@@ -238,7 +241,7 @@ class Store extends EventTarget {
 
   create = (opts) => {
     const id = (toastsCounter++).toString();
-    const toast = { id, ...opts };
+    const toast = { ...opts, id };
 
     this.#set((data) => ({
       toasts: [...data.toasts, toast],
@@ -284,23 +287,7 @@ class Toast {
 
     const children = [];
 
-    let icon = null;
-    if (opts.type) {
-      switch (opts.type) {
-        case "success":
-          icon = icons.success;
-          break;
-        case "info":
-          icon = icons.info;
-          break;
-        case "warning":
-          icon = icons.warning;
-          break;
-        case "error":
-          icon = icons.error;
-          break;
-      }
-    }
+    const icon = (opts.type && getIcons()[opts.type]) || null;
 
     if (icon) {
       children.push(
@@ -317,7 +304,7 @@ class Toast {
           type: "button",
           "aria-label": "Close"
         },
-        [icons.close.cloneNode(true)],
+        [getIcons().close.cloneNode(true)],
       );
 
       closeButton.addEventListener("click", () => {
@@ -358,7 +345,7 @@ class Toast {
 
     const liDataset = {
       sourdoughToast: "",
-      expanded: sourdough.opts.expanded,
+      expanded: sourdough.expanded,
       styled: true,
       swiping: false,
       swipeOut: false,
