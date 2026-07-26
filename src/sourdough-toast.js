@@ -681,4 +681,14 @@ toast.dismiss = (id) => {
   }
 };
 
-export { toast, Sourdough, h };
+// Boot the single toaster; no-op if one is already live
+const boot = (opts = {}) => {
+  if (!instance) new Sourdough(opts).boot();
+};
+
+// Tear down the live toaster so a differently-configured one can boot
+const destroy = () => {
+  if (instance) instance.destroy();
+};
+
+export { toast, boot, destroy, h };

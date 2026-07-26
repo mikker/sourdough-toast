@@ -312,11 +312,9 @@ test("clicking a data-toast-dismiss button is not hijacked by swipe", async ({
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
 });
 
-test("booting a second instance while one is live is a no-op", async ({
-  page,
-}) => {
+test("booting while a toaster is live is a no-op", async ({ page }) => {
   await page.evaluate(() => {
-    new window.Sourdough({ yPosition: "top" }).boot();
+    window.boot({ yPosition: "top" });
     window.toast("Singleton toast");
   });
 
@@ -336,13 +334,13 @@ test("destroy() removes the toaster and a new instance can boot", async ({
   await page.getByRole("button", { name: "Basic" }).click();
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
 
-  await page.evaluate(() => window.sourdough.destroy());
+  await page.evaluate(() => window.destroy());
 
   await expect(page.locator("[data-sourdough-toaster]")).toHaveCount(0);
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
 
   await page.evaluate(() => {
-    new window.Sourdough({ yPosition: "top" }).boot();
+    window.boot({ yPosition: "top" });
     window.toast("After reboot");
   });
 
@@ -351,17 +349,6 @@ test("destroy() removes the toaster and a new instance can boot", async ({
     "top",
   );
   await expect(page.getByText("After reboot", { exact: true })).toHaveCount(1);
-});
-
-test("a constructed-but-unbooted instance has no effect", async ({ page }) => {
-  await page.evaluate(() => {
-    new window.Sourdough({ closeButton: true });
-    window.toast("Only once");
-  });
-
-  await expect(page.locator("[data-sourdough-toaster]")).toHaveCount(1);
-  await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
-  await expect(page.locator("[data-close-button]")).toHaveCount(0);
 });
 
 test("persisted toasts don't count toward maxToasts", async ({ page }) => {
