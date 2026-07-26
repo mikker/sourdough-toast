@@ -490,15 +490,15 @@ class Sourdough {
     document.body.appendChild(this.element);
   };
 
-  update = (state) => {
-    this.expanded = state.expanded || state.interacting;
+  update = (data) => {
+    this.expanded = data.expanded || data.interacting;
     this.list.dataset.expanded = this.expanded;
 
     // Get last X toasts, but persisted toasts don't count toward the limit
-    const nonPersisted = state.toasts.filter((t) => !t.persist);
+    const nonPersisted = data.toasts.filter((t) => !t.persist);
     const capped = nonPersisted.slice(-this.opts.maxToasts);
     const cappedIds = new Set(capped.map((t) => t.id));
-    const toasts = state.toasts.filter(
+    const toasts = data.toasts.filter(
       (t) => t.persist || cappedIds.has(t.id),
     );
 
@@ -535,9 +535,9 @@ class Sourdough {
 
     for (const [index, t] of toastsToRender.entries()) {
       if (!t.element.dataset.removed) {
-        if (t.paused && !state.interacting) {
+        if (t.paused && !data.interacting) {
           t.resume();
-        } else if (!t.paused && state.interacting) {
+        } else if (!t.paused && data.interacting) {
           t.pause();
         }
       }

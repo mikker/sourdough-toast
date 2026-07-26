@@ -211,14 +211,7 @@ test("description without html:true renders markup as text", async ({
   await expect(description.locator("strong")).toHaveCount(0);
 });
 
-// FIXME: Genuine bug in src/sourdough-toast.js — Sourdough.update's `state`
-// parameter shadows the module-level Store, so the eviction path calls
-// `state.remove(id)` on the plain data object and throws
-// "TypeError: state.remove is not a function". The evicted toast's element is
-// removed from the DOM, but it is never removed from the store. Click-driven
-// tests don't notice because the error is an uncaught page error, but it
-// surfaces (and fails this test) when toasts are created via page.evaluate.
-test.fixme("oldest toast is the one evicted at maxToasts", async ({ page }) => {
+test("oldest toast is the one evicted at maxToasts", async ({ page }) => {
   await page.evaluate(() => {
     window.toast("Toast 1");
     window.toast("Toast 2");
