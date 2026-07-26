@@ -71,6 +71,7 @@ const svgAttrs = {
   "stroke-width": "1.5",
   "stroke-linecap": "round",
   "stroke-linejoin": "round",
+  "aria-hidden": "true",
   dataset: { slot: "icon" },
 };
 
@@ -308,7 +309,7 @@ class Toast {
         {
           dataset: { closeButton: "" },
           type: "button",
-          ariaLabel: "Close"
+          "aria-label": "Close"
         },
         [icons.close.cloneNode(true)],
       );
@@ -367,6 +368,9 @@ class Toast {
     const li = h(
       "li",
       {
+        role: "status",
+        "aria-live": opts.type === "error" ? "assertive" : "polite",
+        "aria-atomic": "true",
         dataset: liDataset,
         style: {},
       },
@@ -426,6 +430,7 @@ class Sourdough {
 
     this.list = h("ol", {
       dir: getDocumentDirection(),
+      "aria-label": "Notifications",
       dataset: {
         sourdoughToaster: "",
         expanded: this.expanded,
@@ -443,6 +448,19 @@ class Sourdough {
 
     this.list.addEventListener("mouseenter", state.focus);
     this.list.addEventListener("mouseleave", state.blur);
+    this.list.addEventListener("focusin", state.focus);
+    this.list.addEventListener("focusout", (event) => {
+      if (!this.list.contains(event.relatedTarget)) state.blur();
+    });
+    this.list.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+
+      const element = event.target.closest("[data-sourdough-toast]");
+      const toast = Object.values(this.renderedToastsById).find(
+        (t) => t.element === element,
+      );
+      if (toast) toast.remove();
+    });
 
     this.element = h(
       "div",
