@@ -1,6 +1,6 @@
 {
   "name": "sourdough-toast",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Delicious Sourdough Toast",
   "type": "module",
   "main": "src/sourdough-toast.js",
