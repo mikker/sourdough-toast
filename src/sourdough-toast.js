@@ -388,7 +388,7 @@ class Toast {
     state.touch();
 
     if (!this.opts.persist) {
-      this.timeLeft = this.sourdough.opts.duration;
+      this.timeLeft = this.opts.duration ?? this.sourdough.opts.duration;
 
       if (state.data.interacting) {
         // Resumed by the update loop once interaction ends
