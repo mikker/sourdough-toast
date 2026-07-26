@@ -54,7 +54,7 @@ const h = (tag, props = {}, children = []) => {
   for (const child of [children].flat(Infinity)) {
     if (typeof child === "string") {
       element.appendChild(document.createTextNode(child));
-    } else {
+    } else if (child instanceof Node) {
       element.appendChild(child);
     }
   }
