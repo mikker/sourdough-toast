@@ -64,6 +64,8 @@ toast("Update ready", {
 > [!WARNING]
 > `html: true` injects the description via `innerHTML` without sanitization. Never pass user-provided content — it's an XSS vector.
 
+Toasts can also be dismissed by swiping them toward their screen edge — down when positioned at the bottom, up when at the top.
+
 ## Options
 
 `new Sourdough(options)` accepts:

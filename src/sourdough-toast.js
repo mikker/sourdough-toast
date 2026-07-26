@@ -14,6 +14,13 @@ const DEFAULT_OPTIONS = {
   richColors: false,
 };
 
+// Matches the exit transition duration in the CSS
+const REMOVE_DELAY_MS = 400;
+
+// Swiping past either threshold dismisses the toast
+const SWIPE_THRESHOLD_PX = 45;
+const SWIPE_VELOCITY = 0.11;
+
 let toastsCounter = 0;
 
 // {{{ Helpers
@@ -21,11 +28,10 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 const svgTags = ["svg", "path", "line", "circle"];
 
-const h = (tag, props = {}, children = [], isSvg = false) => {
-  const element =
-    svgTags.includes(tag) || isSvg
-      ? document.createElementNS(SVG_NS, tag)
-      : document.createElement(tag);
+const h = (tag, props = {}, children = []) => {
+  const element = svgTags.includes(tag)
+    ? document.createElementNS(SVG_NS, tag)
+    : document.createElement(tag);
 
   for (const [key, value] of Object.entries(props)) {
     if (key === "style") {
@@ -45,16 +51,10 @@ const h = (tag, props = {}, children = [], isSvg = false) => {
     }
   }
 
-  for (const child of children) {
+  for (const child of [children].flat(Infinity)) {
     if (typeof child === "string") {
       element.appendChild(document.createTextNode(child));
-      continue;
-    } else if (Array.isArray(child)) {
-      for (const c of child) {
-        element.appendChild(c);
-      }
-      continue;
-    } else if (child instanceof HTMLElement || child instanceof SVGElement) {
+    } else if (child instanceof Node) {
       element.appendChild(child);
     }
   }
@@ -204,12 +204,10 @@ function getDocumentDirection() {
 // }}}
 
 // {{{ class Store
-class Store extends EventTarget {
+class Store {
   #subscribers = [];
 
   constructor() {
-    super();
-
     this.data = {
       toasts: [],
       expanded: false,
@@ -232,7 +230,7 @@ class Store extends EventTarget {
   #set = (fn) => {
     const change = fn({ ...this.data });
     this.data = { ...this.data, ...change };
-    this.#publish(this.data);
+    this.#publish();
   };
 
   touch = () => {
@@ -375,8 +373,59 @@ class Toast {
 
     this.element = li;
 
+    this.setupSwipe();
+
     renderedToasts.set(opts.id, this);
   }
+
+  setupSwipe = () => {
+    let startY, startedAt, delta;
+
+    this.element.addEventListener("pointerdown", (event) => {
+      if (!event.isPrimary) return;
+      if (event.target.closest("button, a, [data-toast-dismiss]")) return;
+
+      this.element.setPointerCapture(event.pointerId);
+      startY = event.clientY;
+      startedAt = Date.now();
+      delta = 0;
+      this.element.dataset.swiping = "true";
+      // Touch has no hover to pause the timer, so pause explicitly
+      this.pause();
+    });
+
+    this.element.addEventListener("pointermove", (event) => {
+      if (this.element.dataset.swiping !== "true") return;
+
+      // Only allow movement toward the dismissal edge
+      delta = event.clientY - startY;
+      if (this.sourdough.opts.yPosition === "top") {
+        delta = Math.min(delta, 0);
+      } else {
+        delta = Math.max(delta, 0);
+      }
+
+      this.element.style.setProperty("--swipe-amount", `${delta}px`);
+    });
+
+    const endSwipe = () => {
+      if (this.element.dataset.swiping !== "true") return;
+
+      const velocity = Math.abs(delta) / (Date.now() - startedAt);
+
+      if (Math.abs(delta) >= SWIPE_THRESHOLD_PX || velocity >= SWIPE_VELOCITY) {
+        this.element.dataset.swipeOut = "true";
+        this.remove();
+      } else {
+        this.element.style.removeProperty("--swipe-amount");
+        this.element.dataset.swiping = "false";
+        if (!state.data.interacting) this.resume();
+      }
+    };
+
+    this.element.addEventListener("pointerup", endSwipe);
+    this.element.addEventListener("pointercancel", endSwipe);
+  };
 
   mount = () => {
     this.element.dataset.mounted = "true";
@@ -407,7 +456,7 @@ class Toast {
     setTimeout(() => {
       this.element.remove();
       state.remove(this.opts.id);
-    }, 400);
+    }, REMOVE_DELAY_MS);
   };
 
   pause = () => {
@@ -506,18 +555,16 @@ class Sourdough {
     );
 
     // Render and cache toasts that haven't been rendered yet
-    const renderedIds = [];
-    const toastsToRender = toasts.reduce((coll, t) => {
-      renderedIds.push(t.id);
-      coll.push(this.renderedToastsById[t.id] || this.createToast(t));
-      return coll;
-    }, []);
+    const renderedIds = new Set(toasts.map((t) => t.id));
+    const toastsToRender = toasts.map(
+      (t) => this.renderedToastsById[t.id] || this.createToast(t),
+    );
 
     // Uncache and remove toast elements that are not to be rendered.
     // Deleting from the cache before state.remove keeps the re-entrant
     // update it triggers from finding the toast again.
     Object.keys(this.renderedToastsById).forEach((id) => {
-      if (!renderedIds.includes(id)) {
+      if (!renderedIds.has(id)) {
         const evicted = this.renderedToastsById[id];
         delete this.renderedToastsById[id];
         renderedToasts.delete(id);
@@ -536,8 +583,16 @@ class Sourdough {
       );
     }
 
+    // Each toast is offset by the heights of the toasts after it plus the
+    // gaps between them. Unmounted toasts have no height yet (NaN), which
+    // the `offset || 0` guard below turns into 0.
+    const boxHeights = toastsToRender.map((t) => t.initialHeight + this.opts.gap);
+    const totalHeight = boxHeights.reduce((sum, height) => sum + height, 0);
+    let heightBefore = 0;
+
     for (const [index, t] of toastsToRender.entries()) {
-      if (!t.element.dataset.removed) {
+      // A toast mid-swipe manages its own timer until the swipe ends
+      if (!t.element.dataset.removed && t.element.dataset.swiping !== "true") {
         if (t.paused && !data.interacting) {
           t.resume();
         } else if (!t.paused && data.interacting) {
@@ -561,22 +616,9 @@ class Sourdough {
         this.expanded ? "auto" : `${t.initialHeight}px`,
       );
 
-      // Calculate offset by adding all the heights of the toasts before
-      // the current one + the gap between them.
-      // Note: We're calculating the total height once per loop which is
-      // not ideal.
-      const [heightBefore, totalHeight] = toastsToRender.reduce(
-        ([before, total], t, i) => {
-          const boxHeight = t.initialHeight + this.opts.gap;
-          if (i < index) before += boxHeight;
-          total += boxHeight;
-          return [before, total];
-        },
-        [0, 0],
-      );
+      const offset = totalHeight - heightBefore - boxHeights[index];
+      heightBefore += boxHeights[index];
 
-      const offset =
-        totalHeight - heightBefore - t.initialHeight - this.opts.gap;
       t.element.style.setProperty(
         "--offset",
         `${t.element.dataset.removed ? "0" : offset || 0}px`,
