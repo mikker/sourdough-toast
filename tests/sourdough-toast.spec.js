@@ -12,6 +12,7 @@ test("has title", async ({ page }) => {
 test("a basic toast can render and then disappear after duration", async ({
   page,
 }) => {
+  await page.goto("/tests?duration=500");
   await page.getByRole("button", { name: "Basic" }).click();
 
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
@@ -42,10 +43,11 @@ test("toast have types", async ({ page }) => {
 });
 
 test("toasts don't dismiss when hovered", async ({ page }) => {
+  await page.goto("/tests?duration=1500");
   await page.getByRole("button", { name: "Basic" }).click();
 
   await page.hover("[data-sourdough-toast]");
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await page.waitForTimeout(2000);
 
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
 });
@@ -65,7 +67,6 @@ test("clicking close button removes the toast", async ({ page }) => {
     page.locator("[data-sourdough-toast][data-removed='true']"),
   ).toBeVisible();
 
-  await page.waitForTimeout(500);
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
 });
 
@@ -82,15 +83,15 @@ test("render html in toast description and data-toast-dismiss works", async ({
   expect(await dismissButton.textContent()).toBe("Confirm");
   await dismissButton.click();
   await page.waitForSelector("[data-sourdough-toast][data-removed='true']");
-  await page.waitForTimeout(500);
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(0);
 });
 
 test("persisted toast does not auto-dismiss", async ({ page }) => {
+  await page.goto("/tests?duration=500");
   await page.getByRole("button", { name: "Persist", exact: true }).click();
 
-  // Wait beyond the default duration (4s)
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  // Wait beyond the (shortened) duration
+  await page.waitForTimeout(1000);
 
   await expect(page.locator("[data-sourdough-toast]")).toHaveCount(1);
 });
