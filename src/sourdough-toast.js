@@ -78,117 +78,118 @@ const svgAttrs = {
 
 // Built lazily so importing this module doesn't require a DOM
 let icons;
-const getIcons = () => (icons ??= {
-  success: h("svg", svgAttrs, [h("path", { d: "M20 6 9 17l-5-5" })]),
-  info: h("svg", svgAttrs, [
-    h("circle", { cx: "12", cy: "12", r: "10" }),
-    h("path", { d: "M12 16v-4" }),
-    h("path", { d: "M12 8h.01" }),
-  ]),
-  warning: h("svg", svgAttrs, [
-    h("path", {
-      d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
-    }),
-    h("path", { d: "M12 9v4" }),
-    h("path", { d: "M12 17h.01" }),
-  ]),
-  error: h("svg", svgAttrs, [
-    h("circle", { cx: "12", cy: "12", r: "10" }),
-    h("path", { d: "m4.9 4.9 14.2 14.2" }),
-  ]),
-  spinner: h(
-    "svg",
-    {
-      ...svgAttrs,
-      viewBox: "0 0 2400 2400",
-      stroke: "black",
-      "data-sourdough-spinner": "",
-      "stroke-width": "200",
-      "stroke-linecap": "round",
-    },
-    [
-      h("line", { x1: "1200", y1: "600", x2: "1200", y2: "100" }),
-      h("line", {
-        opacity: "0.5",
-        x1: "1200",
-        y1: "2300",
-        x2: "1200",
-        y2: "1800",
+const getIcons = () =>
+  (icons ??= {
+    success: h("svg", svgAttrs, [h("path", { d: "M20 6 9 17l-5-5" })]),
+    info: h("svg", svgAttrs, [
+      h("circle", { cx: "12", cy: "12", r: "10" }),
+      h("path", { d: "M12 16v-4" }),
+      h("path", { d: "M12 8h.01" }),
+    ]),
+    warning: h("svg", svgAttrs, [
+      h("path", {
+        d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
       }),
-      h("line", {
-        opacity: "0.917",
-        x1: "900",
-        y1: "680.4",
-        x2: "650",
-        y2: "247.4",
-      }),
-      h("line", {
-        opacity: "0.417",
-        x1: "1750",
-        y1: "2152.6",
-        x2: "1500",
-        y2: "1719.6",
-      }),
-      h("line", {
-        opacity: "0.833",
-        x1: "680.4",
-        y1: "900",
-        x2: "247.4",
-        y2: "650",
-      }),
-      h("line", {
-        opacity: "0.333",
-        x1: "2152.6",
-        y1: "1750",
-        x2: "1719.6",
-        y2: "1500",
-      }),
-      h("line", {
-        opacity: "0.75",
-        x1: "600",
-        y1: "1200",
-        x2: "100",
-        y2: "1200",
-      }),
-      h("line", {
-        opacity: "0.25",
-        x1: "2300",
-        y1: "1200",
-        x2: "1800",
-        y2: "1200",
-      }),
-      h("line", {
-        opacity: "0.667",
-        x1: "680.4",
-        y1: "1500",
-        x2: "247.4",
-        y2: "1750",
-      }),
-      h("line", {
-        opacity: "0.167",
-        x1: "2152.6",
-        y1: "650",
-        x2: "1719.6",
-        y2: "900",
-      }),
-      h("line", {
-        opacity: "0.583",
-        x1: "900",
-        y1: "1719.6",
-        x2: "650",
-        y2: "2152.6",
-      }),
-      h("line", {
-        opacity: "0.083",
-        x1: "1750",
-        y1: "247.4",
-        x2: "1500",
-        y2: "680.4",
-      }),
-    ],
-  ),
-  close: h("svg", svgAttrs, [h("path", { d: "M6 18 18 6M6 6l12 12" })]),
-});
+      h("path", { d: "M12 9v4" }),
+      h("path", { d: "M12 17h.01" }),
+    ]),
+    error: h("svg", svgAttrs, [
+      h("circle", { cx: "12", cy: "12", r: "10" }),
+      h("path", { d: "m4.9 4.9 14.2 14.2" }),
+    ]),
+    spinner: h(
+      "svg",
+      {
+        ...svgAttrs,
+        viewBox: "0 0 2400 2400",
+        stroke: "black",
+        "data-sourdough-spinner": "",
+        "stroke-width": "200",
+        "stroke-linecap": "round",
+      },
+      [
+        h("line", { x1: "1200", y1: "600", x2: "1200", y2: "100" }),
+        h("line", {
+          opacity: "0.5",
+          x1: "1200",
+          y1: "2300",
+          x2: "1200",
+          y2: "1800",
+        }),
+        h("line", {
+          opacity: "0.917",
+          x1: "900",
+          y1: "680.4",
+          x2: "650",
+          y2: "247.4",
+        }),
+        h("line", {
+          opacity: "0.417",
+          x1: "1750",
+          y1: "2152.6",
+          x2: "1500",
+          y2: "1719.6",
+        }),
+        h("line", {
+          opacity: "0.833",
+          x1: "680.4",
+          y1: "900",
+          x2: "247.4",
+          y2: "650",
+        }),
+        h("line", {
+          opacity: "0.333",
+          x1: "2152.6",
+          y1: "1750",
+          x2: "1719.6",
+          y2: "1500",
+        }),
+        h("line", {
+          opacity: "0.75",
+          x1: "600",
+          y1: "1200",
+          x2: "100",
+          y2: "1200",
+        }),
+        h("line", {
+          opacity: "0.25",
+          x1: "2300",
+          y1: "1200",
+          x2: "1800",
+          y2: "1200",
+        }),
+        h("line", {
+          opacity: "0.667",
+          x1: "680.4",
+          y1: "1500",
+          x2: "247.4",
+          y2: "1750",
+        }),
+        h("line", {
+          opacity: "0.167",
+          x1: "2152.6",
+          y1: "650",
+          x2: "1719.6",
+          y2: "900",
+        }),
+        h("line", {
+          opacity: "0.583",
+          x1: "900",
+          y1: "1719.6",
+          x2: "650",
+          y2: "2152.6",
+        }),
+        h("line", {
+          opacity: "0.083",
+          x1: "1750",
+          y1: "247.4",
+          x2: "1500",
+          y2: "680.4",
+        }),
+      ],
+    ),
+    close: h("svg", svgAttrs, [h("path", { d: "M6 18 18 6M6 6l12 12" })]),
+  });
 
 function getDocumentDirection() {
   if (typeof window === "undefined") return "ltr";
@@ -298,14 +299,17 @@ class Toast {
       );
     }
 
-    const showCloseButton = opts.persist || opts.closeButton === true || (this.sourdough.opts.closeButton === true && opts.closeButton !== false);
+    const showCloseButton =
+      opts.persist ||
+      opts.closeButton === true ||
+      (this.sourdough.opts.closeButton === true && opts.closeButton !== false);
     if (showCloseButton) {
       const closeButton = h(
         "button",
         {
           dataset: { closeButton: "" },
           type: "button",
-          "aria-label": "Close"
+          "aria-label": "Close",
         },
         [getIcons().close.cloneNode(true)],
       );
@@ -330,14 +334,18 @@ class Toast {
         description = h("div", { dataset: { description: "" } }, []);
         description.innerHTML = opts.description;
       } else {
-        description = h("div", { dataset: { description: "" } }, [opts.description]);
+        description = h("div", { dataset: { description: "" } }, [
+          opts.description,
+        ]);
       }
 
-      description.querySelectorAll("[data-toast-dismiss]").forEach(trigger => {
-        trigger.addEventListener("click", (e) => {
-          this.remove();
+      description
+        .querySelectorAll("[data-toast-dismiss]")
+        .forEach((trigger) => {
+          trigger.addEventListener("click", (e) => {
+            this.remove();
+          });
         });
-      });
 
       contentChildren.push(description);
     }
@@ -567,9 +575,7 @@ class Sourdough {
     const nonPersisted = data.toasts.filter((t) => !t.persist);
     const capped = nonPersisted.slice(-this.opts.maxToasts);
     const cappedIds = new Set(capped.map((t) => t.id));
-    const toasts = data.toasts.filter(
-      (t) => t.persist || cappedIds.has(t.id),
-    );
+    const toasts = data.toasts.filter((t) => t.persist || cappedIds.has(t.id));
 
     // Render toasts that haven't been rendered yet
     const renderedIds = new Set(toasts.map((t) => t.id));
@@ -601,7 +607,9 @@ class Sourdough {
     // Each toast is offset by the heights of the toasts after it plus the
     // gaps between them. Unmounted toasts have no height yet (NaN), which
     // the `offset || 0` guard below turns into 0.
-    const boxHeights = toastsToRender.map((t) => t.initialHeight + this.opts.gap);
+    const boxHeights = toastsToRender.map(
+      (t) => t.initialHeight + this.opts.gap,
+    );
     const totalHeight = boxHeights.reduce((sum, height) => sum + height, 0);
     let heightBefore = 0;
 
