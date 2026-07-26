@@ -349,10 +349,13 @@ class Toast {
       styled: true,
       swiping: false,
       swipeOut: false,
-      type: opts.type,
       yPosition: sourdough.opts.yPosition,
       xPosition: sourdough.opts.xPosition,
     };
+
+    if (opts.type) {
+      liDataset.type = opts.type;
+    }
 
     if (opts.persist) {
       liDataset.persist = "true";
